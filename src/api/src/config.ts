@@ -23,7 +23,7 @@ export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "http://lo
 export const API_PORT = process.env.API_PORT || "3000";
 
 export const FRONTEND_URL = process.env.FRONTEND_URL || "";
-export const AUTH0_DOMAIN = `${process.env.AUTH0_DOMAIN}` || "";
+export const AUTH0_DOMAIN = `${process.env.AUTH0_DOMAIN}/` || "";
 export const AUTH0_AUDIENCE = process.env.AUTH_AUDIENCE;
 
 export const APPLICATION_NAME = process.env.APPLICATION_NAME || "";
@@ -57,3 +57,6 @@ export const DB_CONFIG = {
     port: parseInt(DB_PORT),
   },
 };
+
+export const DB_SCHEMA = process.env.DB_SCHEMA || "";
+export const DB_USER_TABLE = process.env.DB_USER_TABLE || "";

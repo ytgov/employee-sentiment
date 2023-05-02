@@ -1,16 +1,13 @@
 export interface User {
-  email: string;
-  sub: string;
-  first_name: string;
-  last_name: string;
-  status: UserStatus;
-  is_admin: Boolean;
-  ynet_id: string;
-  directory_id: string;
-  create_date: Date;
+  EMAIL: string;
+  SUB: string;
+  FIRST_NAME: string;
+  LAST_NAME: string;
+  STATUS: UserStatus;
+  IS_ADMIN: Boolean;
+  YNET_ID: string;
+  CREATE_DATE: Date;
 
-  roles?: string[];
-  scopes?: string[];
   display_name?: string;
 }
 
@@ -20,20 +17,20 @@ export enum UserStatus {
 }
 
 export interface User_Create {
-  email: string;
-  sub: string;
-  first_name: string;
-  last_name: string;
-  status: UserStatus;
+  EMAIL: string;
+  SUB: string;
+  FIRST_NAME: string;
+  LAST_NAME: string;
+  STATUS: UserStatus;
+  CREATE_DATE: Date;
+  IS_ADMIN: string;
 }
 
 export interface User_Update {
-  first_name: string;
-  last_name: string;
-  status: UserStatus;
-  ynet_id: string;
-  directory_id: string;
-  roles?: string[];
+  FIRST_NAME: string;
+  LAST_NAME: string;
+  STATUS: UserStatus;
+  YNET_ID: string;
 }
 
 export interface UserRole {
@@ -44,15 +41,14 @@ export interface UserRole {
 export class UserHelper {
   fromDTO(dto: any): User {
     return {
-      email: dto.email,
-      sub: dto.sub,
-      first_name: dto.first_name,
-      last_name: dto.last_name,
-      status: dto.status,
-      is_admin: dto.is_admin,
-      ynet_id: dto.ynet_id,
-      directory_id: dto.directory_id,
-      create_date: dto.create_date,
+      EMAIL: dto.EMAIL,
+      SUB: dto.SUB,
+      FIRST_NAME: dto.FIRST_NAME,
+      LAST_NAME: dto.LAST_NAME,
+      STATUS: dto.STATUS,
+      IS_ADMIN: dto.IS_ADMIN,
+      YNET_ID: dto.YNET_ID,
+      CREATE_DATE: dto.CREATE_DATE,
     };
   }
 }

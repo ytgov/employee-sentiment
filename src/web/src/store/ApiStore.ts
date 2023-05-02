@@ -1,14 +1,14 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { useNotificationStore } from "@/store/NotificationStore";
-import { useAuth0 } from "@auth0/auth0-vue";
 import { SecureAPICall } from "./helpers/axiosAPIConfig";
+import { AuthHelper } from "@/plugins/auth";
 
 //refs are reactive variables
 //computed are reactive variables that are derived from other reactive variables
 // functions are equivalent to methods/actions in vue2
 
 export const useApiStore = defineStore("api", () => {
-  const auth = useAuth0();
+  const auth = AuthHelper;
 
   const m = useNotificationStore();
 

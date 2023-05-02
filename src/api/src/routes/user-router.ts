@@ -19,7 +19,7 @@ userRouter.get("/", async (req: Request, res: Response) => {
   let users = await db.getAll();
 
   for (let user of users) {
-    user.display_name = `${user.first_name} ${user.last_name}`;
+    user.display_name = `${user.FIRST_NAME} ${user.LAST_NAME}`;
   }
 
   return res.json({ data: users });
@@ -31,14 +31,13 @@ userRouter.put(
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
     let { email } = req.params;
-    let { roles, status, is_admin } = req.body;
+    let { STATUS, IS_ADMIN } = req.body;
 
     let existing = await db.getByEmail(email);
 
     if (existing) {
-      existing.status = status;
-      existing.roles = roles;
-      existing.is_admin = is_admin;
+      existing.STATUS = STATUS;
+      existing.IS_ADMIN = IS_ADMIN;
 
       await db.update(email, existing);
 

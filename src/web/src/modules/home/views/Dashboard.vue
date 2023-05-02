@@ -14,39 +14,74 @@
     </template>
   </v-breadcrumbs>
 
-  <h1>ELCC Home</h1>
+  <h1>Employee Sentiment Dashboard</h1>
 
   <v-row>
     <v-col cols="4">
-      <v-card elevation="3" color="#DC440566" to="/child-care-centres">
-        <v-card-text style="text-align: right; color: white"> </v-card-text>
+      <v-card elevation="3" color="#7A9A0166" to="/administration/surveys">
+        <v-card-text style="text-align: right; color: white">
+          <v-icon
+            class="float-left"
+            style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
+            >mdi-head-question</v-icon
+          >
+          <div style="font-size: 52px; line-height: 52px">{{ surveyCount }}</div>
+          <div>Surveys</div>
+        </v-card-text>
       </v-card>
     </v-col>
     <v-col cols="4">
       <v-card elevation="3" color="#0097a966">
-        <v-card-text style="text-align: right" color="white"> </v-card-text>
+        <v-card-text style="text-align: right" color="white">
+          <v-icon
+            class="float-left"
+            style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
+            >mdi-lightbulb-outline</v-icon
+          >
+          <div style="font-size: 52px; line-height: 52px">{{ responseCount }}</div>
+          <div>Total Responses</div>
+        </v-card-text>
       </v-card>
     </v-col>
     <v-col cols="4">
-      <v-card elevation="3" color="#F2A90066">
-        <v-card-text style="text-align: right"> </v-card-text>
+      <v-card elevation="3" color="#F2A90066" to="/administration/moderation">
+        <v-card-text style="text-align: right">
+          <v-icon
+            class="float-left"
+            style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
+            >mdi-lightbulb-alert</v-icon
+          >
+          <div style="font-size: 52px; line-height: 52px">{{ moderateCount }}</div>
+          <div>Awaiting Moderation</div>
+        </v-card-text>
       </v-card>
     </v-col>
-
+    <!-- 
     <v-col cols="12">
       <v-card elevation="3" color="#7A9A0166">
         <v-card-text style="text-align: right"> </v-card-text>
       </v-card>
-    </v-col>
+    </v-col> -->
   </v-row>
 </template>
 
 <script lang="ts">
+import { useSurveyStore } from "@/modules/administration/modules/survey/store";
+import { mapActions, mapState } from "pinia";
+
 export default {
   name: "Dashboard",
   data: () => ({
     breadcrumbs: [{ title: "Home", disabled: false }],
   }),
-  computed: {},
+  computed: {
+    ...mapState(useSurveyStore, ["surveyCount", "responseCount", "moderateCount"]),
+  },
+  async mounted() {
+    await this.initialize();
+  },
+  methods: {
+    ...mapActions(useSurveyStore, ["initialize"]),
+  },
 };
 </script>

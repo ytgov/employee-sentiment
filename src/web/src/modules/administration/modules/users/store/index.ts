@@ -37,12 +37,6 @@ export const useUserAdminStore = defineStore("userAdmin", {
           this.isLoading = false;
         });
     },
-    async getRoles() {
-      console.log("getting roles");
-
-      let api = useApiStore();
-      api.secureCall("get", PROFILE_URL);
-    },
     selectUser(user: any) {
       this.selectedUser = user;
     },

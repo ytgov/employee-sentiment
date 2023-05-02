@@ -47,17 +47,16 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
         } else {
           if (!email) email = `${first_name}.${last_name}@yukon-no-email.ca`;
 
-          let eu = await db.getByEmail(email);
-
-          if (eu) {
-            eu.sub = sub;
-            await db.update(email, eu);
-
-            req.user = { ...req.user, ...eu };
-          } else {
-            u = await db.create({ email, sub, status: UserStatus.INACTIVE, first_name, last_name });
-            req.user = { ...req.user, ...u };
-          }
+          u = await db.create({
+            EMAIL: email,
+            SUB: sub,
+            STATUS: UserStatus.INACTIVE,
+            FIRST_NAME: first_name,
+            LAST_NAME: last_name,
+            CREATE_DATE: new Date(),
+            IS_ADMIN: "N",
+          });
+          req.user = { ...req.user, ...u };
         }
       } else {
         console.log("Payload from Auth0 is strange or failed for", req.user);

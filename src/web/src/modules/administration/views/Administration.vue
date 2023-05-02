@@ -27,17 +27,30 @@
         </v-card-text>
       </v-card>
     </v-col>
+    <v-col>
+      <v-card to="/administration/surveys">
+        <v-card-title>Surveys</v-card-title>
+        <v-card-text>
+          <div style="font-size: 30px">
+            {{ surveyCount }}
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-col>
   </v-row>
 </template>
 
 <script lang="ts">
-import { useUserAdminStore } from "@/modules/users/store";
-import { mapState } from "pinia";
+import { mapActions, mapState } from "pinia";
+import { useSurveyStore } from "../modules/survey/store";
 
 export default {
-  data: () => ({}),
+  data: () => ({
+    userCount: 0,
+  }),
+  mounted() {},
   computed: {
-    ...mapState(useUserAdminStore, ["userCount"]),
+    ...mapState(useSurveyStore, ["surveyCount"]),
 
     breadcrumbs() {
       return [
@@ -48,5 +61,6 @@ export default {
       ];
     },
   },
+  methods: {},
 };
 </script>

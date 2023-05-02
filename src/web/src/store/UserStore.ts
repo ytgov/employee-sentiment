@@ -13,14 +13,10 @@ export const useUserStore = defineStore("user", {
       first_name: "",
       last_name: "",
       email: "",
-      roles: [""],
       ynet_id: "",
     },
   }),
   getters: {
-    userRoles(state) {
-      return state.user.roles;
-    },
     isAdmin(state) {
       return true;
     },
@@ -35,7 +31,6 @@ export const useUserStore = defineStore("user", {
       let api = useApiStore();
       await api.secureCall("get", PROFILE_URL).then((resp) => {
         this.user = resp.data;
-        this.user.roles = [];
       });
     },
   },
