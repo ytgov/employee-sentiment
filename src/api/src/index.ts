@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import path from "path";
 import helmet from "helmet";
-import { API_PORT, FRONTEND_URL, APPLICATION_NAME } from "./config";
+import { API_PORT, FRONTEND_URL, APPLICATION_NAME, AUTH0_DOMAIN } from "./config";
 import { userRouter } from "./routes";
 import { doHealthCheck } from "./utils/health_check";
 import { questionRouter } from "./routes/question-router";
@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      "default-src": ["'self'"],
+      "default-src": ["'self'", `${AUTH0_DOMAIN}`],
       "base-uri": ["'self'"],
       "block-all-mixed-content": [],
       "font-src": ["'self'", "https:", "data:"],

@@ -4,7 +4,7 @@ export interface User {
   FIRST_NAME: string;
   LAST_NAME: string;
   STATUS: UserStatus;
-  IS_ADMIN: Boolean | string;
+  IS_ADMIN: boolean | string;
   YNET_ID: string;
   CREATE_DATE: Date;
   ROLE: string;
