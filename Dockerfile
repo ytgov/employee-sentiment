@@ -1,6 +1,7 @@
 FROM oraclelinux:9
 
 RUN dnf config-manager --set-enabled ol9_appstream
+RUN dnf module enable -y nodejs:18
 RUN dnf install -y nodejs
 ENV TZ America/Whitehorse
 RUN mkdir /home/node 
