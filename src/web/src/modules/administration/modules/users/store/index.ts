@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 import { useNotificationStore } from "@/store/NotificationStore";
 import { useApiStore } from "@/store/ApiStore";
-import { PROFILE_URL, USERS_URL } from "@/urls";
+import { USERS_URL } from "@/urls";
 
 let m = useNotificationStore();
 
