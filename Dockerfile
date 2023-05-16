@@ -1,7 +1,7 @@
 FROM oraclelinux:9
 
 RUN dnf config-manager --set-enabled ol9_appstream
-RUN dnf module enable -y nodejs:18
+RUN dnf module enable -ySET  nodejs:18
 RUN dnf install -y nodejs
 ENV TZ America/Whitehorse
 RUN mkdir /home/node 
@@ -26,10 +26,10 @@ COPY src/api ./
 RUN npm run build
 
 WORKDIR /home/node/web
-ENV NODE_ENV=production
 RUN npm run build
 
 WORKDIR /home/node/app
 EXPOSE 3000
+ENV NODE_ENV=production
 
 CMD ["node", "./dist/index.js"]
