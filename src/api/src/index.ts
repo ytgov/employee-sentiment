@@ -24,7 +24,7 @@ app.use(
       "script-src-attr": ["'none'"],
       "style-src": ["'self'", "https:", "'unsafe-inline'"],
       "worker-src": ["'self'", "blob:"],
-      "connect-src": ["'self'"],
+      "connect-src": ["'self'", `${AUTH0_DOMAIN}`],
     },
   })
 );
