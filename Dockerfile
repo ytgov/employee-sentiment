@@ -25,11 +25,11 @@ COPY src/api ./
 
 RUN npm run build
 
+ENV NODE_ENV=production
 WORKDIR /home/node/web
 RUN npm run build
 
 WORKDIR /home/node/app
-ENV NODE_ENV=production
 EXPOSE 3000
 
 CMD ["node", "./dist/index.js"]
