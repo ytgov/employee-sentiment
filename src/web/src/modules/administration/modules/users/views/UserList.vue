@@ -31,7 +31,7 @@
       <add-user :onComplete="loadItems"></add-user>
     </template>
 
-    <v-data-table :search="search" :headers="headers" :items="items" @click:row="rowClick">
+    <v-data-table :search="search" :headers="headers" :items="items" :loading="isLoading" @click:row="rowClick">
       <template v-slot:item.permissions="{ item }">
         <v-chip color="yg_moss" v-if="item.value.IS_ADMIN">Admin</v-chip>
         <v-chip color="yg_zinc" v-else-if="item.value.ROLE == 'Moderator'">Moderator</v-chip>

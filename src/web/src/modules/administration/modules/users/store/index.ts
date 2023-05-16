@@ -9,7 +9,7 @@ let m = useNotificationStore();
 interface AdminState {
   users: Array<AppUser>;
   selectedUser: AppUser | undefined;
-  isLoading: Boolean;
+  isLoading: boolean;
 }
 
 export const useUserAdminStore = defineStore("userAdmin", {
