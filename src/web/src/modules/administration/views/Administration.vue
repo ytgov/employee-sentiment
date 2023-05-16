@@ -18,21 +18,30 @@
 
   <v-row>
     <v-col>
-      <v-card to="/administration/users">
+      <v-card to="/administration/users" elevation="0">
         <v-card-title>Users</v-card-title>
-        <v-card-text>
-          <div style="font-size: 30px">
+        <v-card-text class="pb-6">
+          <div style="font-size: 30px; font-weight: 700;">
             {{ userCount }}
           </div>
         </v-card-text>
       </v-card>
     </v-col>
     <v-col>
-      <v-card to="/administration/surveys">
-        <v-card-title>Surveys</v-card-title>
-        <v-card-text>
-          <div style="font-size: 30px">
-            {{ surveyCount }}
+      <v-card to="/administration/questions" elevation="0">
+        <v-card-title>Questions</v-card-title>
+        <v-card-text class="pb-6">
+          <div style="font-size: 30px; font-weight: 700;">
+            {{ questionCount }}
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-col> <v-col>
+      <v-card to="/administration/emailer" elevation="0">
+        <v-card-title>Emailer</v-card-title>
+        <v-card-text class="pb-6">
+          <div style="font-size: 30px; font-weight: 700;">
+            &nbsp
           </div>
         </v-card-text>
       </v-card>
@@ -42,15 +51,18 @@
 
 <script lang="ts">
 import { mapActions, mapState } from "pinia";
-import { useSurveyStore } from "../modules/survey/store";
+import { useQuestionStore } from "../modules/question/store";
+import { useUserAdminStore } from "../modules/users/store";
 
 export default {
-  data: () => ({
-    userCount: 0,
-  }),
-  mounted() {},
+  data: () => ({}),
+  async mounted() {
+    await this.getAllUsers();
+    await this.loadQuestions();
+  },
   computed: {
-    ...mapState(useSurveyStore, ["surveyCount"]),
+    ...mapState(useUserAdminStore, ["userCount"]),
+    ...mapState(useQuestionStore, ["questionCount"]),
 
     breadcrumbs() {
       return [
@@ -61,6 +73,9 @@ export default {
       ];
     },
   },
-  methods: {},
+  methods: {
+    ...mapActions(useQuestionStore, ["loadQuestions"]),
+    ...mapActions(useUserAdminStore, ["getAllUsers"]),
+  },
 };
 </script>

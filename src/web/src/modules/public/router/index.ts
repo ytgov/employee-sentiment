@@ -15,6 +15,10 @@ const routes = [
         path: "survey/:surveyId/complete",
         component: () => import("../views/SurveyComplete.vue"),
       },
+      {
+        path: "rating/:surveyId",
+        component: () => import("../views/Rating.vue"),
+      },
     ],
   },
 ];

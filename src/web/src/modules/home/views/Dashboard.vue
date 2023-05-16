@@ -18,15 +18,15 @@
 
   <v-row>
     <v-col cols="4">
-      <v-card elevation="3" color="#7A9A0166" to="/administration/surveys">
+      <v-card elevation="3" color="#7A9A0166" to="/administration/questions">
         <v-card-text style="text-align: right; color: white">
           <v-icon
             class="float-left"
             style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
             >mdi-head-question</v-icon
           >
-          <div style="font-size: 52px; line-height: 52px">{{ surveyCount }}</div>
-          <div>Surveys</div>
+          <div style="font-size: 52px; line-height: 52px">{{ questionCount }}</div>
+          <div>Questions</div>
         </v-card-text>
       </v-card>
     </v-col>
@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { useSurveyStore } from "@/modules/administration/modules/survey/store";
+import { useQuestionStore } from "@/modules/administration/modules/question/store";
 import { mapActions, mapState } from "pinia";
 
 export default {
@@ -75,13 +75,13 @@ export default {
     breadcrumbs: [{ title: "Home", disabled: false }],
   }),
   computed: {
-    ...mapState(useSurveyStore, ["surveyCount", "responseCount", "moderateCount"]),
+    ...mapState(useQuestionStore, ["questionCount", "responseCount", "moderateCount"]),
   },
   async mounted() {
     await this.initialize();
   },
   methods: {
-    ...mapActions(useSurveyStore, ["initialize"]),
+    ...mapActions(useQuestionStore, ["initialize"]),
   },
 };
 </script>

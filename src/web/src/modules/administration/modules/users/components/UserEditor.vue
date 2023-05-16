@@ -1,44 +1,49 @@
 <template>
-  <v-dialog v-model="visible" persistent max-width="800">
+  <v-dialog v-model="visible" persistent max-width="500">
     <v-card v-if="selectedUser">
       <v-toolbar color="primary" variant="dark" title="Edit User">
         <v-spacer></v-spacer>
         <v-btn icon @click="close" color="white"><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
       <v-card-text>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-text-field
-              label="Name"
-              v-model="selectedUser.display_name"
-              readonly
-              variant="outlined"
-              density="comfortable"
-              append-inner-icon="mdi-lock"></v-text-field>
-            <v-text-field
-              label="Email"
-              v-model="selectedUser.email"
-              readonly
-              variant="outlined"
-              density="comfortable"
-              append-inner-icon="mdi-lock"></v-text-field>
-            <v-select
-              label="Status"
-              v-model="selectedUser.status"
-              :items="['Active', 'Inactive']"
-              variant="outlined"
-              density="comfortable"></v-select>
+        <v-text-field
+          label="Name"
+          v-model="selectedUser.display_name"
+          readonly
+          variant="outlined"
+          density="comfortable"
+          append-inner-icon="mdi-lock"></v-text-field>
+        <v-text-field
+          label="Email"
+          v-model="selectedUser.EMAIL"
+          readonly
+          variant="outlined"
+          density="comfortable"
+          append-inner-icon="mdi-lock"></v-text-field>
+        <v-select
+          label="Status"
+          v-model="selectedUser.STATUS"
+          :items="['Active', 'Inactive']"
+          variant="outlined"
+          density="comfortable"></v-select>
 
+        <v-row v-if="selectedUser.STATUS == 'Active'">
+          <v-col>
             <v-checkbox
               label="System Admin"
-              v-model="selectedUser.is_admin"
+              v-model="selectedUser.IS_ADMIN"
               variant="outlined"
-              density="comfortable"></v-checkbox>
-          </v-col>
-          <v-divider vertical thickness="1"></v-divider>
-          <v-col cols="12" md="6">
-            <h3>Permissions</h3>
-          </v-col>
+              density="comfortable"></v-checkbox
+          ></v-col>
+          <v-col>
+            <v-checkbox
+              v-if="!selectedUser.IS_ADMIN"
+              label="Moderator"
+              v-model="selectedUser.ROLE"
+              value="Moderator"
+              variant="outlined"
+              density="comfortable"></v-checkbox
+          ></v-col>
         </v-row>
       </v-card-text>
       <v-card-actions class="mx-4 mb-2">

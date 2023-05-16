@@ -5,7 +5,7 @@ import { GenericService } from "./generic-service";
 
 export class UserService implements GenericService<User> {
   async getAll(): Promise<User[]> {
-    return db.withSchema(DB_SCHEMA).from(DB_USER_TABLE);
+    return db.withSchema(DB_SCHEMA).from(DB_USER_TABLE).orderBy(["FIRST_NAME", "LAST_NAME"]);
   }
 
   async getBySub(SUB: string): Promise<User | undefined> {

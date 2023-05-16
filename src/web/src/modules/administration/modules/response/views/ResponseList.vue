@@ -21,7 +21,7 @@
 
 
       <v-select
-        label="Survey"
+        label="Question"
         :items="['Weekend', 'Moderated']"
         density="compact"
         single-line
@@ -64,7 +64,7 @@ export default {
   components: { ResponseEditor },
   data: () => ({
     headers: [
-      { title: "Survey/Question", key: "question" },
+      { title: "Question", key: "question" },
       { title: "Date", key: "date" },
       { title: "Status", key: "status" },
     ],

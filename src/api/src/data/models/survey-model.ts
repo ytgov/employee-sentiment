@@ -1,14 +1,15 @@
 export interface Survey {}
 
 export interface Question {
-  QID: number;
-  SID: number;
-  ASK: string;
-  TYPE: string;
-  RANGE: number;
-  SELECTION_JSON: string;
-  OPTIONAL: number;
-  ORDER: number;
+  ID: number;
+  TITLE: string;
+  DISPLAY_TEXT: string;
+  CREATE_DATE: Date;
+  OWNER: string;
+  STATE: number;
+  MAX_ANWERS: number;
+  RATINGS_PER_TRANCHE: number;
+  CURRENT_RATING_TRANCHE: number;
 }
 
 export interface QuestionResponse {

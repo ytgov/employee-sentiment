@@ -3,10 +3,52 @@ import { ReturnValidationErrors } from "../middleware";
 import { param } from "express-validator";
 import * as knex from "knex";
 import { DB_CONFIG } from "../config";
+import { QuestionService } from "../services";
 
-export const surveyRouter = express.Router();
+export const questionRouter = express.Router();
 
-surveyRouter.get(
+const questionService = new QuestionService();
+
+questionRouter.get("/", async (req: Request, res: Response) => {
+  let list = await questionService.getAll();
+
+  res.json({ data: list });
+});
+
+questionRouter.post("/", async (req: Request, res: Response) => {
+  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE } = req.body;
+
+  let question = await questionService.create({
+    CURRENT_RATING_TRANCHE,
+    DISPLAY_TEXT,
+    MAX_ANSWERS,
+    OWNER,
+    RATINGS_PER_TRANCHE,
+    STATE,
+    TITLE,
+  });
+
+  res.json({ data: question });
+});
+
+questionRouter.put("/:id", async (req: Request, res: Response) => {
+  let { id } = req.params;
+  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE } = req.body;
+
+  let question = await questionService.update(parseInt(id), {
+    CURRENT_RATING_TRANCHE,
+    DISPLAY_TEXT,
+    MAX_ANSWERS,
+    OWNER,
+    RATINGS_PER_TRANCHE,
+    STATE,
+    TITLE,
+  });
+
+  res.json({ data: question });
+});
+
+questionRouter.get(
   "/:token",
   [param("token").notEmpty()],
   ReturnValidationErrors,
@@ -37,7 +79,7 @@ surveyRouter.get(
   }
 );
 
-surveyRouter.get(
+questionRouter.get(
   "/:token/preview",
   [param("token").notEmpty()],
   ReturnValidationErrors,
@@ -55,7 +97,7 @@ surveyRouter.get(
   }
 );
 
-surveyRouter.post(
+questionRouter.post(
   "/:token",
   [param("token").notEmpty()],
   ReturnValidationErrors,
@@ -111,7 +153,7 @@ surveyRouter.post(
 );
 
 // This route is only temporary to test for submissions
-surveyRouter.get(
+questionRouter.get(
   "/:token/answers",
   [param("token").notEmpty()],
   ReturnValidationErrors,

@@ -49,7 +49,7 @@ export const useUserAdminStore = defineStore("userAdmin", {
 
       if (this.selectedUser) {
         await api
-          .secureCall("put", `${USERS_URL}/${this.selectedUser.email}`, this.selectedUser)
+          .secureCall("put", `${USERS_URL}/${this.selectedUser.EMAIL}`, this.selectedUser)
           .then((resp) => {
             this.users = resp.data;
             this.unselectUser();
@@ -62,14 +62,30 @@ export const useUserAdminStore = defineStore("userAdmin", {
         this.getAllUsers();
       }
     },
+    async addUser(user: any) {
+      let api = useApiStore();
+
+      return api.secureCall("post", USERS_URL, { user }).then(async (resp) => {
+        await this.getAllUsers();
+        return resp.data;
+      });
+    },
+    async searchDirectory(terms: any) {
+      let api = useApiStore();
+
+      return api.secureCall("post", `${USERS_URL}/search-directory`, terms).then((resp) => {
+        return resp.data;
+      });
+    },
   },
 });
 
 export interface AppUser {
-  email: string;
-  first_name: string;
-  last_name: string;
+  EMAIL: string;
+  FIRST_NAME: string;
+  LAST_NAME: string;
   display_name: string;
-  is_admin: boolean;
-  status: string;
+  IS_ADMIN: boolean;
+  STATUS: string;
+  ROLE: string;
 }

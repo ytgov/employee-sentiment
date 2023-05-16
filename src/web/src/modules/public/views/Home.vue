@@ -6,6 +6,9 @@
   </p>
 
   <p>** there could be report/results published here for public consumption</p>
+
+
+  <p><router-link to="/rating/1">Rate Responses</router-link></p>
 </template>
 
 <script>

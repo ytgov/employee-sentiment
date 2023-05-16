@@ -2,9 +2,8 @@ body,
 h1,
 h2,
 h3,
-p,
-div {
-  color: #323232 !important;
+p {
+  color: #323232;
 }
 html {
   font-size: 15px;
@@ -83,4 +82,9 @@ table.table {
   text-align: left;
   margin-top: 10px;
   font-size: 1.05em;
+}
+
+.v-card.elevation-0,
+.v-alert.elevation-0 {
+  border: 1px #d7cfbe solid;
 }

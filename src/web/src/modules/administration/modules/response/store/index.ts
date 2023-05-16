@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 import { useNotificationStore } from "@/store/NotificationStore";
 import { useApiStore } from "@/store/ApiStore";
-import { SURVEY_URL } from "@/urls";
+import { QUESTION_URL } from "@/urls";
 
 let m = useNotificationStore();
 let api = useApiStore();
@@ -21,7 +21,7 @@ export const useResponseStore = defineStore("response", {
     async initialize() {},
     async loadResponses() {
       /* await api
-        .secureCall("get", SURVEY_URL)
+        .secureCall("get", QUESTION_URL)
         .then((resp) => {
           this.responses = resp.data;
 
@@ -46,7 +46,7 @@ export const useResponseStore = defineStore("response", {
     },
     async create() {
       await api
-        .secureCall("post", SURVEY_URL, this.response)
+        .secureCall("post", QUESTION_URL, this.response)
         .then(async (resp) => {
           await this.loadResponses();
         })
@@ -55,7 +55,7 @@ export const useResponseStore = defineStore("response", {
     async update() {
       if (this.response) {
         await api
-          .secureCall("put", `${SURVEY_URL}/${this.response.SID}`, this.response)
+          .secureCall("put", `${QUESTION_URL}/${this.response.SID}`, this.response)
           .then(async (resp) => {
             await this.loadResponses();
           })
@@ -65,7 +65,7 @@ export const useResponseStore = defineStore("response", {
     async delete() {
       if (this.response) {
         await api
-          .secureCall("delete", `${SURVEY_URL}/${this.response.SID}`, this.response)
+          .secureCall("delete", `${QUESTION_URL}/${this.response.SID}`, this.response)
           .then(async (resp) => {
             await this.loadResponses();
           })

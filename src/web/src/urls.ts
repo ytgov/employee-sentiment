@@ -6,4 +6,4 @@ export const HEALTHCHECK_URL = `${config.apiBaseUrl}/api/healthcheck`;
 
 // App specific URLS
 
-export const SURVEY_URL = `${config.apiBaseUrl}/api/survey`;
+export const QUESTION_URL = `${config.apiBaseUrl}/api/question`;

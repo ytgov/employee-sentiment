@@ -1,3 +1,4 @@
+export * from "./survey-model";
 export * from "./user-model";
 export * from "./log";
 

@@ -14,7 +14,7 @@
     </template>
   </v-breadcrumbs>
 
-  <h1>Users</h1>
+  <h1>Questions</h1>
 
   <base-card showHeader="t" heading="" elevation="0">
     <template v-slot:left>
@@ -28,7 +28,7 @@
         class="ml-2"></v-text-field>
     </template>
     <template v-slot:right>
-      <add-user :onComplete="loadItems"></add-user>
+      <v-btn color="primary" variant="tonal" size="small" class="mr-5" @click="addQuesionClick">Add Question</v-btn>
     </template>
 
     <v-data-table :search="search" :headers="headers" :items="items" :loading="isLoading" @click:row="rowClick">
@@ -39,33 +39,32 @@
     </v-data-table>
   </base-card>
 
-  <user-editor></user-editor>
+  <question-editor></question-editor>
 </template>
 <script lang="ts">
 import { mapActions, mapState } from "pinia";
-import { useUserAdminStore } from "../store";
-import UserEditor from "../components/UserEditor.vue";
+import { useQuestionStore } from "../store";
+import QuestionEditor from "../components/QuestionEditor.vue";
 import { clone } from "lodash";
-import AddUser from "../components/AddUser.vue";
 
 export default {
-  components: { UserEditor, AddUser },
+  components: { QuestionEditor },
   data: () => ({
     headers: [
-      { title: "Name", key: "display_name" },
-      { title: "Email", key: "EMAIL" },
-      { title: "Status", key: "STATUS" },
-      { title: "Permisions", key: "permissions" },
+      { title: "Title", key: "TITLE" },
+      { title: "Owner", key: "OWNER" },
+      { title: "State", key: "STATE" },
+      { title: "Current Tranche", key: "CURRENT_RATING_TRANCHE" },
     ],
     search: "",
   }),
   computed: {
-    ...mapState(useUserAdminStore, ["users", "isLoading"]),
+    ...mapState(useQuestionStore, ["questions", "isLoading"]),
     items() {
-      return this.users;
+      return this.questions;
     },
     totalItems() {
-      return this.users.length;
+      return this.questions.length;
     },
     breadcrumbs() {
       return [
@@ -74,7 +73,7 @@ export default {
           to: "/administration",
         },
         {
-          title: "Users",
+          title: "Questions",
         },
       ];
     },
@@ -83,15 +82,26 @@ export default {
     this.loadItems();
   },
   methods: {
-    ...mapActions(useUserAdminStore, ["getAllUsers", "selectUser"]),
+    ...mapActions(useQuestionStore, ["loadQuestions", "select"]),
 
     async loadItems() {
-      await this.getAllUsers();
+      await this.loadQuestions();
     },
     rowClick(event: Event, thing: any) {
-      this.selectUser(clone(thing.item.value));
+      this.select(clone(thing.item.value));
     },
-    newUserClick() {},
+    addQuesionClick() {
+      this.select({
+        TITLE: "",
+        CREATE_DATE: new Date(),
+        CURRENT_RATING_TRANCHE: 0,
+        DISPLAY_TEXT: "",
+        MAX_ANSWERS: 4,
+        OWNER: "",
+        STATE: 0,
+        RATINGS_PER_TRANCHE: 10,
+      });
+    },
   },
 };
 </script>

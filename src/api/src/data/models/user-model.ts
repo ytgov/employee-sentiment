@@ -4,9 +4,10 @@ export interface User {
   FIRST_NAME: string;
   LAST_NAME: string;
   STATUS: UserStatus;
-  IS_ADMIN: Boolean;
+  IS_ADMIN: Boolean | string;
   YNET_ID: string;
   CREATE_DATE: Date;
+  ROLE: string;
 
   display_name?: string;
 }
@@ -24,6 +25,7 @@ export interface User_Create {
   STATUS: UserStatus;
   CREATE_DATE: Date;
   IS_ADMIN: string;
+  ROLE: string;
 }
 
 export interface User_Update {
@@ -31,6 +33,8 @@ export interface User_Update {
   LAST_NAME: string;
   STATUS: UserStatus;
   YNET_ID: string;
+  ROLE: string;
+  SUB?: string;
 }
 
 export interface UserRole {
@@ -49,6 +53,7 @@ export class UserHelper {
       IS_ADMIN: dto.IS_ADMIN,
       YNET_ID: dto.YNET_ID,
       CREATE_DATE: dto.CREATE_DATE,
+      ROLE: dto.ROLE,
     };
   }
 }

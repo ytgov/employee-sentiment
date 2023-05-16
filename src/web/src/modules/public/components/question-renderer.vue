@@ -1,10 +1,10 @@
 <template>
   <div>
-    <v-card class="default mb-5 question">
+    <v-card class="mb-5 question" elevation="0">
       <v-card-title class="pb-0" style="min-height: 48px">
         <v-row>
           <v-col cols="11" class="pb-1" style="line-height: 24px">
-            Question {{ index + 1 }}: {{ question.ASK }}
+            Question: {{ question.ASK }}
             <span v-if="question.OPTIONAL == 0" class="text-error">*</span>
           </v-col>
           <v-col cols="1" class="">

@@ -1,13 +1,13 @@
 <template>
   <h1>{{ survey.survey.PAGE_TITLE }}</h1>
-  <p class="lead" style="font-size: 1.2rem; font-weight: 300">
+  <p class="mb-4" style="font-size: 1.2rem; font-weight: 300">
     {{ survey.survey.DESCRIPTION }}
   </p>
-
-  <v-divider class="my-4" />
+<!-- 
+  <v-divider class="my-4" /> -->
 
   <div v-if="!moveOn">
-    <v-card class="default">
+    <v-card elevation="0">
       <v-card-text>
         <div v-html="survey.survey.PAGE_INTRO"></div>
 
@@ -48,10 +48,10 @@
   </div>
 
   <div v-if="moveOn">
-    <h4 class="mb-4">
+   <!--  <h4 class="mb-4">
       This survey consists of {{ survey.questions.length }} questions. Once completed, please press 'Submit' at the
       bottom.
-    </h4>
+    </h4> -->
 
     <div class="row">
       <div class="col-sm-12 col-md-9 col-lg-7">
@@ -60,7 +60,7 @@
         </div>
 
         <div v-if="survey.survey.CONTACT_QUESTION">
-          <v-card class="default mb-5 question">
+          <v-card class="mb-5 question" elevation="0">
             <v-card-title class="pb-0" style="min-height: 48px">
               <v-row>
                 <v-col cols="12" class="pb-1" style="line-height: 24px"> Regarding this survey... </v-col>

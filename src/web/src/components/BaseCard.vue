@@ -9,7 +9,7 @@
       <slot name="right" />
     </v-toolbar>
     <v-divider v-if="showHeader"></v-divider>
-    <div class="pa-2">
+    <div class="pa-3">
       <slot />
     </div>
   </v-card>

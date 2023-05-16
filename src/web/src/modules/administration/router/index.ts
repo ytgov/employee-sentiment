@@ -20,6 +20,16 @@ const routes = [
         component: () => import("../modules/response/views/ResponseList.vue"),
         beforeEnter: authGuard,
       },
+      {
+        path: "/administration/questions",
+        component: () => import("../modules/question/views/QuestionList.vue"),
+        beforeEnter: authGuard,
+      },
+      {
+        path: "/administration/emailer",
+        component: () => import("../modules/emailer/views/EmailerHome.vue"),
+        beforeEnter: authGuard,
+      },
     ],
   },
 ];
