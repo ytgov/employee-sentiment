@@ -14,9 +14,13 @@ export class UserService implements GenericService<User> {
   }
 
   async getByEmail(EMAIL: string): Promise<User | undefined> {
-    console.log("LOOKING BY EMAIL", EMAIL)
-    let user = await db<User>(DB_USER_TABLE).withSchema(DB_SCHEMA).where({ EMAIL }).first();
-    return user;
+    console.log("LOOKING BY EMAIL", EMAIL);
+    if (EMAIL) {
+      let user = await db<User>(DB_USER_TABLE).withSchema(DB_SCHEMA).where({ EMAIL }).first();
+      return user;
+    }
+
+    return undefined;
   }
 
   async create(item: User_Create): Promise<any> {
