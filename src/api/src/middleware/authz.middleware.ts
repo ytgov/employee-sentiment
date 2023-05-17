@@ -35,11 +35,11 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
 
   let e = await db.getByEmail(req.user.email);
 
-  if (e && e.SUB == "SUB_MISSING") {
+  if (e && e.USER_ID == "SUB_MISSING") {
     req.user = { ...req.user, ...e };
 
     await db.update(req.user.email, {
-      SUB: sub,
+      USER_ID: sub,
       FIRST_NAME: e.FIRST_NAME,
       LAST_NAME: e.LAST_NAME,
       ROLE: e.ROLE,
@@ -68,7 +68,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
 
           u = await db.create({
             EMAIL: email.toLowerCase(),
-            SUB: sub,
+            USER_ID: sub,
             STATUS: UserStatus.INACTIVE,
             FIRST_NAME: first_name,
             LAST_NAME: last_name,

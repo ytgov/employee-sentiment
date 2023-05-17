@@ -8,8 +8,8 @@ export class UserService implements GenericService<User> {
     return db.withSchema(DB_SCHEMA).from(DB_USER_TABLE).orderBy(["FIRST_NAME", "LAST_NAME"]);
   }
 
-  async getBySub(SUB: string): Promise<User | undefined> {
-    let user = await db<User>(DB_USER_TABLE).withSchema(DB_SCHEMA).where({ SUB }).first();
+  async getBySub(USER_ID: string): Promise<User | undefined> {
+    let user = await db<User>(DB_USER_TABLE).withSchema(DB_SCHEMA).where({ USER_ID }).first();
     return user;
   }
 

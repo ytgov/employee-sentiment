@@ -1,6 +1,6 @@
 export interface User {
   EMAIL: string;
-  SUB: string;
+  USER_ID: string;
   FIRST_NAME: string;
   LAST_NAME: string;
   STATUS: UserStatus;
@@ -19,7 +19,7 @@ export enum UserStatus {
 
 export interface User_Create {
   EMAIL: string;
-  SUB: string;
+  USER_ID: string;
   FIRST_NAME: string;
   LAST_NAME: string;
   STATUS: UserStatus;
@@ -34,7 +34,7 @@ export interface User_Update {
   STATUS: UserStatus;
   YNET_ID: string;
   ROLE: string;
-  SUB?: string;
+  USER_ID?: string;
 }
 
 export interface UserRole {
@@ -46,7 +46,7 @@ export class UserHelper {
   fromDTO(dto: any): User {
     return {
       EMAIL: dto.EMAIL,
-      SUB: dto.SUB,
+      USER_ID: dto.USER_ID,
       FIRST_NAME: dto.FIRST_NAME,
       LAST_NAME: dto.LAST_NAME,
       STATUS: dto.STATUS,
