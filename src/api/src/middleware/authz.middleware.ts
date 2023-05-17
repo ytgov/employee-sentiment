@@ -31,6 +31,8 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
     return next();
   }
 
+  console.log("USER NOT FOUDN BY SUB CHECK EMAIL", req.user)
+
   let e = await db.getByEmail(req.user.email);
 
   if (e && e.SUB == "SUB_MISSING") {
