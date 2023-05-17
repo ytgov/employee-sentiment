@@ -1,14 +1,12 @@
-FROM oraclelinux:9
+FROM oraclelinux:8
 
-RUN dnf config-manager --set-enabled ol9_appstream
-#RUN dnf module enable -y nodejs:18
+RUN dnf module enable -y nodejs:18
+RUN dnf install -y oracle-instantclient-release-el8
 RUN dnf install -y nodejs 
-#wget unzip
 
-#RUN mkdir -p /opt/oracle
-#WORKDIR /opt/oracle
-#RUN wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip
-#RUN unzip instantclient-basic-linuxx64.zip
+RUN yum upgrade -y && yum install yum-utils
+RUN yum-config-manager --enable *addons
+RUN yum install -y gcc-c++ make libaio
 
 ENV TZ America/Whitehorse
 RUN mkdir /home/node 
@@ -38,7 +36,6 @@ RUN npm run build
 ENV NODE_ENV=production
 WORKDIR /home/node/web
 RUN npm run build
-
 WORKDIR /home/node/app
 EXPOSE 3000
 
