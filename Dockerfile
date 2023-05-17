@@ -1,13 +1,17 @@
-FROM oraclelinux:8
+FROM oraclelinux:7-slim
 
-RUN  dnf -y install oracle-instantclient-release-el8 && \
-     dnf -y install oracle-instantclient-basic oracle-instantclient-devel oracle-instantclient-sqlplus && \
-     rm -rf /var/cache/dnf
+RUN yum upgrade -y && yum install yum-utils
+RUN  yum -y install oracle-release-el7 && \
+     yum-config-manager --enable ol7_oracle_instantclient && \
+     yum -y install oracle-instantclient19.3-basiclite && \
+     rm -rf /var/cache/yum
 
-RUN dnf module enable -y nodejs:18
-RUN dnf install -y nodejs 
+RUN yum-config-manager --enable *addons
+RUN yum install -y gcc-c++ make libaio
 
-ENV TZ America/Whitehorse
+RUN curl -sL https://rpm.nodesource.com/setup_17.x | bash -
+RUN yum install -y nodejs
+
 RUN mkdir /home/node 
 RUN mkdir /home/node/web 
 
@@ -23,19 +27,18 @@ WORKDIR /home/node/app
 COPY src/api/package*.json ./
 COPY .env* ./
 
-ENV NODE_ENV=development
 RUN npm install && npm cache clean --force --loglevel=error
 COPY src/api ./
 
-#RUN cp /opt/oracle/instantclient_21_10/{libclntsh.so,libclntshcore.so,libnnz21.so,libociei.so} /home/node/app/node_modules/oracledb/build/Release
-#RUN cd /home/node/app/node_modules/oracledb/build/Release/ && ln -s libclntsh.dylib.19.1 libclntsh.dylib
+ENV TZ America/Whitehorse
 
 RUN npm run build
-
-ENV NODE_ENV=production
-WORKDIR /home/node/web
-RUN npm run build
-WORKDIR /home/node/app
 EXPOSE 3000
+
+WORKDIR /home/node/web
+ENV NODE_ENV=production
+RUN npm run build
+
+WORKDIR /home/node/app
 
 CMD ["node", "./dist/index.js"]
