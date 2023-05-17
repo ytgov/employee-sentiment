@@ -1,12 +1,14 @@
 FROM oraclelinux:8
 
 RUN dnf module enable -y nodejs:18
+RUN dnf -y install oracle-release-el8
 RUN dnf install -y oracle-instantclient-release-el8
 RUN dnf install -y nodejs 
 
 RUN yum upgrade -y && yum install yum-utils
 RUN yum-config-manager --enable *addons
-RUN yum install -y gcc-c++ make libaio
+RUN yum install -y gcc-c++ make libaio libnsl
+RUN ldconfig
 
 ENV TZ America/Whitehorse
 RUN mkdir /home/node 
