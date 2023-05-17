@@ -9,7 +9,10 @@ RUN  yum -y install oracle-release-el7 && \
 RUN yum-config-manager --enable *addons
 RUN yum install -y gcc-c++ make libaio
 
-RUN curl -sL https://rpm.nodesource.com/setup_18.x | bash -
+#RUN curl -sL https://rpm.nodesource.com/setup_18.x | bash -
+#RUN yum install -y nodejs
+
+RUN yum install -y oracle-nodejs-release-el7
 RUN yum install -y nodejs
 
 RUN mkdir /home/node 
