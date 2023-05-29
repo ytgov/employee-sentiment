@@ -16,7 +16,7 @@
 
   <h1>Emailer</h1>
 
-  <base-card showHeader="" heading="" class="pt-3" elevation="0">
+  <base-card showHeader="" heading="" class="py-3" elevation="0">
     <template v-slot:left>
       <!--  <v-text-field
         v-model="search"
@@ -32,8 +32,10 @@
     </template>
 
     <v-row>
-      <v-col cols="8">
+      <v-col cols="12" md="8">
         <v-select
+          return-object
+          v-model="question"
           density="comfortable"
           variant="outlined"
           label="Question"
@@ -41,8 +43,10 @@
           item-title="TITLE"></v-select>
 
         <v-row>
-          <v-col cols="4">
+          <v-col cols="12" md="4">
             <v-checkbox
+              v-model="email.recipients"
+              value="Opinionators"
               label="Opinionators (63)"
               density="comfortable"
               variant="outlined"
@@ -51,6 +55,8 @@
           </v-col>
           <v-col>
             <v-checkbox
+              v-model="email.recipients"
+              value="Raters"
               label="Raters (107)"
               density="comfortable"
               variant="outlined"
@@ -66,32 +72,43 @@
       <v-label v-if="parsed">Found 2 valid emails</v-label>
     </div> -->
 
-        <v-text-field label="Subject" density="comfortable" variant="outlined"></v-text-field>
-        <v-textarea label="Email body" density="comfortable" variant="outlined" rows="3"></v-textarea>
-
+        <v-text-field v-model="email.subject" label="Subject" density="comfortable" variant="outlined"></v-text-field>
+        <v-textarea
+          v-model="email.body"
+          label="Email body"
+          density="comfortable"
+          variant="outlined"
+          rows="3"></v-textarea>
+        
         <div class="d-flex">
-          <v-btn color="primary" :disabled="!isValid">Send Test</v-btn>
+          <v-btn color="primary" :disabled="!emailValid" @click="sendTestClick">Send Test</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="warning" :disabled="!isValid">Send to Participants</v-btn>
+          <v-btn color="warning" :disabled="!emailValid" @click="sendEmailClick">Send to Participants</v-btn>
         </div></v-col
       >
+      <v-divider vertical />
       <v-col>
-        Event Log <br />
-        Email to opinionators sent on May 29th <br />
+        <v-card elevation="0" variant="tonal" color="#F2A900">
+          <v-card-title>Event Log</v-card-title>
+
+          <v-list>
+            <div v-for="(event, idx) of eventLog">
+              <v-list-item :title="event.TITLE" :subtitle="formatSubtitle(event)"> </v-list-item>
+              <v-divider v-if="idx < eventLog.length - 1" />
+            </div>
+          </v-list>
+        </v-card>
       </v-col>
     </v-row>
   </base-card>
-
-  <email-editor></email-editor>
 </template>
 <script lang="ts">
-import { mapActions, mapState } from "pinia";
-import { useEmailerStore } from "../store";
-import EmailEditor from "../components/EmailEditor.vue";
+import { mapActions, mapState, mapWritableState } from "pinia";
+import { useEmailerStore, Event } from "../store";
 import { clone } from "lodash";
+import moment from "moment";
 
 export default {
-  components: { EmailEditor },
   data: () => ({
     headers: [
       { title: "Title", key: "TITLE" },
@@ -103,7 +120,8 @@ export default {
     search: "",
   }),
   computed: {
-    ...mapState(useEmailerStore, ["questions", "isLoading"]),
+    ...mapState(useEmailerStore, ["questions", "isLoading", "eventLog", "emailValid"]),
+    ...mapWritableState(useEmailerStore, ["question", "email"]),
     items() {
       return this.questions;
     },
@@ -121,33 +139,29 @@ export default {
         },
       ];
     },
-    isValid() {
-      return true;
+  },
+  watch: {
+    question: async function (n, o) {
+      await this.loadEvents();
     },
   },
   beforeMount() {
     this.loadItems();
   },
   methods: {
-    ...mapActions(useEmailerStore, ["loadQuestions", "select"]),
+    ...mapActions(useEmailerStore, ["loadQuestions", "select", "loadEvents", "sendTest", "sendEmail"]),
 
     async loadItems() {
       await this.loadQuestions();
     },
-    rowClick(event: Event, thing: any) {
-      this.select(clone(thing.item.value));
+    formatSubtitle(item: Event) {
+      return `${moment(item.CREATE_DATE).format("YYYY-MM-DD @ h:mm A")} by ${item.user.display_name}`;
     },
-    addQuesionClick() {
-      this.select({
-        TITLE: "",
-        CREATE_DATE: new Date(),
-        CURRENT_RATING_TRANCHE: 0,
-        DISPLAY_TEXT: "",
-        MAX_ANSWERS: 4,
-        OWNER: "",
-        STATE: 0,
-        RATINGS_PER_TRANCHE: 10,
-      });
+    async sendTestClick() {
+      await this.sendTest();
+    },
+    async sendEmailClick() {
+      await this.sendEmail();
     },
   },
 };

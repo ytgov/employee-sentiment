@@ -18,15 +18,17 @@
     <v-card-text>
       <p>I really like to go skiing, but it's summer so I will go water skiing.</p>
 
-      <v-rating color="primary" density="comfortable"></v-rating>
+      <v-rating clearable color="primary" density="comfortable"></v-rating>
     </v-card-text>
   </v-card>
-  
+
   <v-card elevation="0" class="mb-3">
     <v-card-text>
       <p>I probably will walk my dogs then take a nap.</p>
 
-      <v-rating label="What did you think of this response?" color="primary" density="comfortable">Reat</v-rating>
+      <v-rating clearable label="What did you think of this response?" color="primary" density="comfortable"
+        >Reat</v-rating
+      >
     </v-card-text>
   </v-card>
 
@@ -34,14 +36,13 @@
     <v-card-text>
       <p>I really like to go skiing, but it's summer so I will go water skiing.</p>
 
-      <v-rating color="primary" density="comfortable"></v-rating>
+      <v-rating clearable color="primary" density="comfortable"></v-rating>
     </v-card-text>
   </v-card>
 
   <v-divider class="my-4" />
   <v-btn color="primary"> Submit </v-btn>
   <v-btn color="primary" class="ml-5"> Submit and Rate More </v-btn>
-
 </template>
 
 <script>

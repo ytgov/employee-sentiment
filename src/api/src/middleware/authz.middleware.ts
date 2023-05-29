@@ -31,25 +31,6 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
     return next();
   }
 
-  console.log("USER NOT FOUDN BY SUB CHECK EMAIL", req.user)
-
-  let e = await db.getByEmail(req.user.email);
-
-  if (e && e.USER_ID == "SUB_MISSING") {
-    req.user = { ...req.user, ...e };
-
-    await db.update(req.user.email, {
-      USER_ID: sub,
-      FIRST_NAME: e.FIRST_NAME,
-      LAST_NAME: e.LAST_NAME,
-      ROLE: e.ROLE,
-      STATUS: e.STATUS,
-      YNET_ID: e.YNET_ID,
-    });
-
-    return next();
-  }
-
   await axios
     .get(`${AUTH0_DOMAIN}userinfo`, { headers: { authorization: token } })
     .then(async (resp) => {
@@ -65,6 +46,23 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
           req.user = { ...req.user, ...u };
         } else {
           if (!email) email = `${first_name}.${last_name}@yukon-no-email.ca`;
+
+          let e = await db.getByEmail(email);
+
+          if (e && e.USER_ID == "SUB_MISSING") {
+            req.user = { ...req.user, ...e };
+
+            await db.update(req.user.email, {
+              USER_ID: sub,
+              FIRST_NAME: e.FIRST_NAME,
+              LAST_NAME: e.LAST_NAME,
+              ROLE: e.ROLE,
+              STATUS: e.STATUS,
+              YNET_ID: e.YNET_ID,
+            });
+
+            return next();
+          }
 
           u = await db.create({
             EMAIL: email.toLowerCase(),

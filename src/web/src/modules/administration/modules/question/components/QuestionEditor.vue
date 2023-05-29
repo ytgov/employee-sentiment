@@ -54,7 +54,7 @@
         </v-row>
 
         <v-autocomplete
-          :items="users" multiple
+          :items="moderators" multiple
           item-title="display_name"
           label="Moderators"
           variant="outlined"
@@ -79,7 +79,7 @@ export default {
   data: () => ({}),
   computed: {
     ...mapState(useQuestionStore, ["question"]),
-    ...mapState(useUserAdminStore, ["users"]),
+    ...mapState(useUserAdminStore, ["moderators"]),
     visible() {
       return this.question ? true : false;
     },

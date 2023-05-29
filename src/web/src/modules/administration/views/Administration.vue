@@ -45,6 +45,15 @@
           </div>
         </v-card-text>
       </v-card>
+    </v-col><v-col>
+      <v-card to="/administration/participants" elevation="0">
+        <v-card-title>Participants</v-card-title>
+        <v-card-text class="pb-6">
+          <div style="font-size: 30px; font-weight: 700;">
+            &nbsp
+          </div>
+        </v-card-text>
+      </v-card>
     </v-col>
   </v-row>
 </template>

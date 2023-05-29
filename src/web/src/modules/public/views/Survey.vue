@@ -55,6 +55,9 @@
 
     <div class="row">
       <div class="col-sm-12 col-md-9 col-lg-7">
+
+
+
         <div v-for="(question, idx) of survey.questions" :key="idx">
           <question-renderer :index="idx" :question="question"></question-renderer>
         </div>
@@ -73,9 +76,13 @@
         </div>
       </div>
     </div>
-
+<v-label>You can submit up to 4 more responses</v-label>
+<div class="d-flex">
+        
     <v-btn color="primary" :disabled="!allValid" @click="submitSurvey"> Submit </v-btn>
-  
+    <v-spacer></v-spacer>
+    <v-btn color="secondary"  @click="submitSurvey"> I'm done </v-btn>
+  </div>
     <span style="font-size: 0.9rem" class="pl-4 text-error" v-if="!allValid">
       * Not all required questions have answers (look for the red asterisks next to the question)
     </span>

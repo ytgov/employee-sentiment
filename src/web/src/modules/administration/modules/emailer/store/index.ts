@@ -3,8 +3,8 @@ import { defineStore } from "pinia";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { useApiStore } from "@/store/ApiStore";
 import { QUESTION_URL } from "@/urls";
+import { isUndefined } from "lodash";
 
-let m = useNotificationStore();
 let api = useApiStore();
 
 export const useEmailerStore = defineStore("emailer", {
@@ -12,6 +12,8 @@ export const useEmailerStore = defineStore("emailer", {
     questions: new Array<Question>(),
     question: undefined,
     isLoading: false,
+    eventLog: new Array<Event>(),
+    email: { subject: "", body: "", recipients: [] },
   }),
   getters: {
     questionCount(state) {
@@ -24,6 +26,14 @@ export const useEmailerStore = defineStore("emailer", {
     moderateCount(state) {
       return 2;
     },
+    emailValid(state): boolean {
+      return (
+        !isUndefined(state.question) &&
+        state.email.subject.length > 0 &&
+        state.email.body.length > 0 &&
+        state.email.recipients.length > 0
+      );
+    },
   },
   actions: {
     async initialize() {},
@@ -35,6 +45,19 @@ export const useEmailerStore = defineStore("emailer", {
         })
         .catch();
     },
+    async loadEvents() {
+      if (this.question) {
+        await api
+          .secureCall("get", `${QUESTION_URL}/${this.question.ID}/events`)
+          .then((resp) => {
+            this.eventLog = resp.data;
+          })
+          .catch();
+      } else {
+        this.eventLog = new Array<Event>();
+      }
+    },
+
     async create() {
       await api
         .secureCall("post", QUESTION_URL, this.question)
@@ -63,6 +86,33 @@ export const useEmailerStore = defineStore("emailer", {
           .catch();
       }
     },
+    async sendTest() {
+      if (this.question && this.emailValid) {
+        let m = useNotificationStore();
+
+        await api
+          .secureCall("post", `${QUESTION_URL}/${this.question.ID}/send-email-test`, { ...this.email })
+          .then(async (resp) => {
+            //await this.loadQuestions();
+            await this.loadEvents();
+            m.notify({ variant: "success", text: "Email sent" });
+          })
+          .catch();
+      }
+    },
+    async sendEmail() {
+      if (this.question && this.emailValid) {
+        let m = useNotificationStore();
+
+        await api
+          .secureCall("post", `${QUESTION_URL}/${this.question.ID}/send-email`, { ...this.email })
+          .then(async (resp) => {
+            //await this.loadQuestions();
+            m.notify({ variant: "success", text: "Email sent" });
+          })
+          .catch();
+      }
+    },
     select(item: Question) {
       this.question = item;
     },
@@ -76,6 +126,8 @@ export interface QuestionStore {
   questions: Question[];
   question: Question | undefined;
   isLoading: boolean;
+  eventLog: Event[];
+  email: Email;
 }
 
 export interface Question {
@@ -88,4 +140,18 @@ export interface Question {
   MAX_ANSWERS: number;
   RATINGS_PER_TRANCHE: number;
   CURRENT_RATING_TRANCHE: number;
+}
+
+export interface Event {
+  ID?: number;
+  TITLE: string;
+  CREATE_DATE: Date;
+  QUESTION_ID: number;
+  user: { display_name: string };
+}
+
+export interface Email {
+  subject: string;
+  body: string;
+  recipients: string[];
 }

@@ -48,6 +48,29 @@ questionRouter.put("/:id", async (req: Request, res: Response) => {
   res.json({ data: question });
 });
 
+questionRouter.get("/:id/events", async (req: Request, res: Response) => {
+  let { id } = req.params;
+
+  let list = [
+    {
+      ID: 12,
+      TITLE: "Opinionator list created",
+      CREATE_DATE: new Date(),
+      QUESTION_ID: id,
+      user: { display_name: "Michael Johnson" },
+    },
+    {
+      ID: 12,
+      TITLE: "Opinionator email sent to 46 participants",
+      CREATE_DATE: new Date(),
+      QUESTION_ID: id,
+      user: { display_name: "Eckhard Krabel" },
+    },
+  ];
+
+  res.json({ data: list });
+});
+
 questionRouter.get(
   "/:token",
   [param("token").notEmpty()],

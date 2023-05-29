@@ -23,6 +23,12 @@ export const useUserAdminStore = defineStore("userAdmin", {
       if (state && state.users) return state.users.length;
       return 0;
     },
+    moderators(state) {
+      if (state.users.length > 0) {
+        return state.users.filter((u) => u.ROLE == "Moderator" || u.IS_ADMIN);
+      }
+      return new Array<AppUser>();
+    },
   },
   actions: {
     async getAllUsers() {
