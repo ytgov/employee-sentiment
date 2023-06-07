@@ -14,3 +14,13 @@ export function SecureAPICall(method: string, token: string) {
     headers: headers,
   });
 }
+
+export function APICall(method: string) {
+  let headers = {
+    "Content-Type": "application/json",
+  };
+  return axios.create({
+    method: method,
+    headers: headers,
+  });
+}

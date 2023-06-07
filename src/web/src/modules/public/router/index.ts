@@ -8,11 +8,11 @@ const routes = [
         component: () => import("../views/Home.vue"),
       },
       {
-        path: "survey/:surveyId",
+        path: "question/:surveyId",
         component: () => import("../views/Survey.vue"),
       },
       {
-        path: "survey/:surveyId/complete",
+        path: "question/complete",
         component: () => import("../views/SurveyComplete.vue"),
       },
       {

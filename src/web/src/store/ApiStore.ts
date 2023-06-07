@@ -1,6 +1,6 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { useNotificationStore } from "@/store/NotificationStore";
-import { SecureAPICall } from "./helpers/axiosAPIConfig";
+import { SecureAPICall, APICall } from "./helpers/axiosAPIConfig";
 import { AuthHelper } from "@/plugins/auth";
 
 //refs are reactive variables
@@ -13,6 +13,7 @@ export const useApiStore = defineStore("api", () => {
   const m = useNotificationStore();
 
   function doApiErrorMessage(err: any) {
+    if (!err) return;
     let status_code = 500;
     let text = err.message;
 
@@ -51,8 +52,25 @@ export const useApiStore = defineStore("api", () => {
 
     return response;
   }
+
+  async function call(method: string, url: string, data?: any) {
+    let response = await APICall(method)
+      .request({ url, data })
+      .then((res) => {
+        doApiErrorMessage(res.data.error);
+        return res.data;
+      })
+      .catch((err) => {
+        doApiErrorMessage(err);
+        return { error: err };
+      });
+
+    return response;
+  }
+
   return {
     secureCall,
+    call,
   };
 });
 

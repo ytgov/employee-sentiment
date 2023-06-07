@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 
 const BASE_TEMPLATE = "../templates/email/base.html";
-const GENERIC_TEMPLATE = "../templates/email/generic.html";
+const OPINIONATOR_TEMPLATE = "../templates/email/opinionator.html";
 
 export class EmailService {
   transport: Transporter;
@@ -15,11 +15,15 @@ export class EmailService {
   }
 
   // this method should be duplicated and customized for each email type with a different template
-  async sendTemplateEmail(recipient: { fullName: string; email: string }, action: string): Promise<any> {
-    let templatePath = path.join(__dirname, GENERIC_TEMPLATE);
-    let content = fs.readFileSync(templatePath).toString();
-    content = content.replace(/``ACTION_NAME``/, action);
-    await this.sendEmail(recipient.fullName, recipient.email, "Template email", content);
+  async sendOpinionatorEmail(
+    recipient: { fullName: string; email: string },
+    subject: string,
+    body: string,
+    token: string
+  ): Promise<any> {
+    body = body.replace(/``TOKEN``/, `<a href="${FRONTEND_URL}/question/${token}">${FRONTEND_URL}/question/${token}</a>`);
+
+    await this.sendEmail(recipient.fullName, recipient.email, subject, body);
   }
 
   async verify(): Promise<any> {

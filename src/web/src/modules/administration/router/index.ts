@@ -30,6 +30,11 @@ const routes = [
         component: () => import("../modules/emailer/views/EmailerHome.vue"),
         beforeEnter: authGuard,
       },
+      {
+        path: "/administration/participants",
+        component: () => import("../modules/participants/views/ParticipantList.vue"),
+        beforeEnter: authGuard,
+      },
     ],
   },
 ];

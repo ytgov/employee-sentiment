@@ -40,6 +40,7 @@
           variant="outlined"
           label="Question"
           :items="questions"
+          @update:model-value="questionChange"
           item-title="TITLE"></v-select>
 
         <v-row>
@@ -47,7 +48,7 @@
             <v-checkbox
               v-model="email.recipients"
               value="Opinionators"
-              label="Opinionators (63)"
+              :label="`Opinionators (${opinionators.length})`"
               density="comfortable"
               variant="outlined"
               hide-details
@@ -57,7 +58,7 @@
             <v-checkbox
               v-model="email.recipients"
               value="Raters"
-              label="Raters (107)"
+              :label="`Raters (${raters.length})`"
               density="comfortable"
               variant="outlined"
               hide-details
@@ -79,7 +80,7 @@
           density="comfortable"
           variant="outlined"
           rows="3"></v-textarea>
-        
+
         <div class="d-flex">
           <v-btn color="primary" :disabled="!emailValid" @click="sendTestClick">Send Test</v-btn>
           <v-spacer></v-spacer>
@@ -105,8 +106,9 @@
 <script lang="ts">
 import { mapActions, mapState, mapWritableState } from "pinia";
 import { useEmailerStore, Event } from "../store";
-import { clone } from "lodash";
+
 import moment from "moment";
+import { useParticipantsStore } from "../../participants/store";
 
 export default {
   data: () => ({
@@ -122,6 +124,8 @@ export default {
   computed: {
     ...mapState(useEmailerStore, ["questions", "isLoading", "eventLog", "emailValid"]),
     ...mapWritableState(useEmailerStore, ["question", "email"]),
+    ...mapState(useParticipantsStore, ["opinionators", "raters"]),
+
     items() {
       return this.questions;
     },
@@ -150,6 +154,7 @@ export default {
   },
   methods: {
     ...mapActions(useEmailerStore, ["loadQuestions", "select", "loadEvents", "sendTest", "sendEmail"]),
+    ...mapActions(useParticipantsStore, ["getParticipants"]),
 
     async loadItems() {
       await this.loadQuestions();
@@ -162,6 +167,14 @@ export default {
     },
     async sendEmailClick() {
       await this.sendEmail();
+    },
+    async questionChange() {
+      console.log("QUESTION IS", this.question);
+      if (this.question && this.question.ID) {
+        let parts = await this.getParticipants(this.question.ID);
+
+        console.log(parts);
+      }
     },
   },
 };

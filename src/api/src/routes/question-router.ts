@@ -3,11 +3,14 @@ import { ReturnValidationErrors } from "../middleware";
 import { param } from "express-validator";
 import * as knex from "knex";
 import { DB_CONFIG } from "../config";
-import { QuestionService } from "../services";
+import { AnswerService, EmailService, ParticipantService, QuestionService } from "../services";
+import { checkJwt, loadUser } from "../middleware/authz.middleware";
+import { Answer } from "src/data/models";
 
 export const questionRouter = express.Router();
 
 const questionService = new QuestionService();
+const emailService = new EmailService();
 
 questionRouter.get("/", async (req: Request, res: Response) => {
   let list = await questionService.getAll();
@@ -29,6 +32,44 @@ questionRouter.post("/", async (req: Request, res: Response) => {
   });
 
   res.json({ data: question });
+});
+
+questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  let { subject, body, recipients } = req.body;
+  let token = "123456789";
+
+  await emailService.sendOpinionatorEmail(
+    { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
+    subject,
+    body,
+    token
+  );
+
+  res.json({ data: "sent" });
+});
+
+questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  let { subject, body, recipients } = req.body;
+  let participants = await new ParticipantService().getByQuestionId(parseInt(id));
+
+  if (recipients.includes("Opinionators")) {
+    let opin = participants.filter((p) => p.IS_RESPONDER == 1);
+
+    for (let part of opin) {
+      await emailService.sendOpinionatorEmail({ email: part.EMAIL, fullName: `` }, subject, body, part.RANDOM_NOUNCE);
+    }
+  }
+  if (recipients.includes("Raters")) {
+    let opin = participants.filter((p) => p.IS_RATER == 1);
+
+    for (let part of opin) {
+      await emailService.sendOpinionatorEmail({ email: part.EMAIL, fullName: `` }, subject, body, part.RANDOM_NOUNCE);
+    }
+  }
+
+  res.json({ data: "sent" });
 });
 
 questionRouter.put("/:id", async (req: Request, res: Response) => {
@@ -76,27 +117,10 @@ questionRouter.get(
   [param("token").notEmpty()],
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
-    const db = knex.knex(DB_CONFIG);
     let { token } = req.params;
 
-    let participant = await db("SRVT.PARTICIPANT")
-      .join("SRVT.PARTICIPANT_DATA", "PARTICIPANT.TOKEN", "PARTICIPANT_DATA.TOKEN")
-      .where({ "PARTICIPANT.TOKEN": token })
-      .whereNotNull("EMAIL")
-      .select("PARTICIPANT.*")
-      .first()
-      .then((r) => r)
-      .catch((err) => {
-        console.log("DATABASE CONNECTION ERROR", err);
-        res.status(500).send(err);
-      });
-
-    if (participant) {
-      let survey = await db("SRVT.SURVEY").where({ SID: participant.SID }).first();
-      let questions = await db("SRVT.QUESTION").where({ SID: participant.SID }).orderBy("ORD");
-
-      return res.json({ data: { survey, questions } });
-    }
+    let payload = await returnQuestion(token, false);
+    if (payload) return res.json(payload);
 
     res.status(404).send();
   }
@@ -125,53 +149,26 @@ questionRouter.post(
   [param("token").notEmpty()],
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
-    const db = knex.knex(DB_CONFIG);
     let { token } = req.params;
-    let { questions, contact } = req.body;
+    let { answer } = req.body;
 
-    let participant = await db("SRVT.PARTICIPANT")
-      .join("SRVT.PARTICIPANT_DATA", "PARTICIPANT.TOKEN", "PARTICIPANT_DATA.TOKEN")
-      .where({ "PARTICIPANT.TOKEN": token })
-      .whereNotNull("EMAIL")
-      .select("PARTICIPANT.*", "PARTICIPANT_DATA.EMAIL")
-      .first();
+    let participant = await new ParticipantService().getByToken(token);
 
     if (participant) {
-      for (let question of questions) {
-        let id = question.QID;
-        let answer = question.answer;
-        let answer_text = question.answer_text;
+      let newAnswer = {
+        ANSWER_TEXT: answer,
+        QUESTION_ID: participant.QUESTION_ID,
+        HEADING: "Uknown",
+        IS_EXTRA: 0,
+      } as Answer;
 
-        let ans: any = {
-          TOKEN: token,
-          QID: id,
-        };
+      await questionService.createAnswer(newAnswer);
+      await new ParticipantService().incrementAnswerCount(token);
 
-        if (typeof answer == "number") ans.NVALUE = answer;
-        else if (Array.isArray(answer)) ans.TVALUE = JSON.stringify(answer);
-        else ans.TVALUE = answer;
-
-        if (answer_text && answer_text.length > 0) {
-          ans.TVALUE = answer_text;
-        }
-
-        await db("SRVT.RESPONSE_LINE").insert(ans);
-      }
-
-      await db("SRVT.PARTICIPANT_DATA").where({ TOKEN: token }).update({ EMAIL: null, RESPONSE_DATE: new Date() });
-
-      if (contact) {
-        await db("SRVT.CONTACT_REQUEST").insert({
-          SID: participant.SID,
-          REQUEST_EMAIL: participant.EMAIL,
-          EMAILED_CHECK: "N",
-        });
-      }
-
-      return res.json({ data: {}, messages: [{ variant: "success" }] });
+      let payload = await returnQuestion(token, true);
+      if (payload) return res.json(payload);
     }
-
-    res.status(404).send("Sorry, it appears that you have already completed this survey.");
+    res.status(404).send("Not found");
   }
 );
 
@@ -187,3 +184,31 @@ questionRouter.get(
     return res.json({ data: answers });
   }
 );
+
+async function returnQuestion(token: string, justAdded: boolean) {
+  let participant = await new ParticipantService().getByToken(token);
+
+  if (participant) {
+    let question = await questionService.getById(participant.QUESTION_ID);
+
+    if (question) {
+      if (!justAdded && participant.ANSWERS_SUBMITTED >= question.MAX_ANSWERS)
+        return { error: { message: "You have already submitted the maximum number of answers" } };
+
+      let q = question as any;
+
+      delete q.OWNER;
+      delete q.CREATE_DATE;
+      delete q.RATINGS_PER_TRANCHE;
+      delete q.STATE;
+      delete q.CURRENT_RATING_TRANCHE;
+
+      q.answer_count = participant.ANSWERS_SUBMITTED;
+      q.answers_remaining = question.MAX_ANSWERS - participant.ANSWERS_SUBMITTED;
+
+      return { data: q };
+    }
+  }
+
+  return undefined;
+}

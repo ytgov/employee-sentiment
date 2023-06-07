@@ -1,4 +1,4 @@
-import { DB_SCHEMA, DB_QUESTION_TABLE } from "../config";
+import { DB_SCHEMA, DB_QUESTION_TABLE, DB_ANSWER_TABLE } from "../config";
 import { db } from "../data";
 import { Question } from "../data/models";
 import { GenericService } from "./generic-service";
@@ -23,5 +23,9 @@ export class QuestionService implements GenericService<Question> {
 
   async delete(ID: number): Promise<void> {
     return db(DB_QUESTION_TABLE).withSchema(DB_SCHEMA).where({ ID }).delete();
+  }
+
+  async createAnswer(answer: any): Promise<any> {
+    return db(DB_ANSWER_TABLE).withSchema(DB_SCHEMA).insert(answer);
   }
 }
