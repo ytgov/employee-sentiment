@@ -65,7 +65,7 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
     let opin = participants.filter((p) => p.IS_RATER == 1);
 
     for (let part of opin) {
-      await emailService.sendOpinionatorEmail({ email: part.EMAIL, fullName: `` }, subject, body, part.RANDOM_NOUNCE);
+      await emailService.sendRaterEmail({ email: part.EMAIL, fullName: `` }, subject, body, part.RANDOM_NOUNCE);
     }
   }
 
@@ -160,6 +160,7 @@ questionRouter.post(
         QUESTION_ID: participant.QUESTION_ID,
         HEADING: "Uknown",
         IS_EXTRA: 0,
+        OWNER_HASH: participant.RANDOM_NOUNCE
       } as Answer;
 
       await questionService.createAnswer(newAnswer);

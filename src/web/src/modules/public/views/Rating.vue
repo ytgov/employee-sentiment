@@ -48,10 +48,10 @@
 <script>
 import { mapActions, mapState } from "pinia";
 import { usePublicStore } from "../store";
-import QuestionRenderer from "../components/question-renderer.vue";
+//import QuestionRenderer from "../components/question-renderer.vue";
 
 export default {
-  components: { QuestionRenderer },
+  //components: { QuestionRenderer },
   data: () => ({
     moveOn: false,
   }),

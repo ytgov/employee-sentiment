@@ -21,7 +21,18 @@ export class EmailService {
     body: string,
     token: string
   ): Promise<any> {
-    body = body.replace(/``TOKEN``/, `<a href="${FRONTEND_URL}/question/${token}">${FRONTEND_URL}/question/${token}</a>`);
+    body = body.replace(/``QUESTION_URL``/, `<a href="${FRONTEND_URL}/question/${token}">${FRONTEND_URL}/question/${token}</a>`);
+
+    await this.sendEmail(recipient.fullName, recipient.email, subject, body);
+  }
+
+  async sendRaterEmail(
+    recipient: { fullName: string; email: string },
+    subject: string,
+    body: string,
+    token: string
+  ): Promise<any> {
+    body = body.replace(/``RATING_URL``/, `<a href="${FRONTEND_URL}/rating/${token}">${FRONTEND_URL}/rating/${token}</a>`);
 
     await this.sendEmail(recipient.fullName, recipient.email, subject, body);
   }

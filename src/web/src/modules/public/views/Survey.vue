@@ -55,20 +55,20 @@
                 hide-details
                 bg-color="white"
                 class="mt-4"></v-textarea>
+              <v-label v-if="question.answers_remaining > 0" class="my-3"
+                >You can submit up to {{ question.answers_remaining }} more responses</v-label
+              >
             </v-card-text>
           </v-card>
         </div>
       </div>
-      <v-label v-if="question.answers_remaining > 0"
-        >You can submit up to {{ question.answers_remaining }} more responses</v-label
-      >
 
-      <div class="d-flex">
-        <v-btn color="primary" :disabled="!allValid" @click="submitSurvey" v-if="question.answers_remaining > 0">
-          Submit
-        </v-btn>
+      <div class="text-right">
         <v-spacer></v-spacer>
-        <v-btn color="secondary" @click="doneClick"> I'm done </v-btn>
+        <v-btn color="primary" class="mb-4" :disabled="!allValid" @click="submitSurvey" v-if="question.answers_remaining > 0">
+          Submit
+        </v-btn><br>
+        <v-btn color="info" @click="doneClick"> I'm done </v-btn>
       </div>
       <span style="font-size: 0.9rem" class="pl-4 text-error" v-if="!allValid">
         * Not all required questions have answers (look for the red asterisks next to the question)
@@ -84,7 +84,7 @@ import { usePublicStore } from "../store";
 
 export default {
   data: () => ({
-    moveOn: false,
+    moveOn: true,
   }),
   async mounted() {
     let token = this.$route.params.surveyId;

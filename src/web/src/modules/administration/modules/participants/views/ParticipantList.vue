@@ -38,12 +38,12 @@
       item-title="TITLE"
       item-value="ID"></v-select>
 
-    <v-combobox
+    <v-select
       label="Type"
       :items="listTypes"
       density="comfortable"
       variant="outlined"
-      v-model="batch.participant_type"></v-combobox>
+      v-model="batch.participant_type"></v-select>
 
     <v-textarea
       v-model="batch.participants"
