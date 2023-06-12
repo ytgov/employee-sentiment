@@ -5,7 +5,7 @@ import { GenericService } from "./generic-service";
 
 export class QuestionService implements GenericService<Question> {
   async getAll(): Promise<Question[]> {
-    return db.withSchema(DB_SCHEMA).from(DB_QUESTION_TABLE);
+    return db<Question>(DB_QUESTION_TABLE).withSchema(DB_SCHEMA);
   }
 
   async getById(ID: number): Promise<Question | undefined> {
