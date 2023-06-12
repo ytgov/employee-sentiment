@@ -40,8 +40,8 @@ export default {
   name: "Home",
   props: ["index", "question"],
   computed: {
-  data: () => ({answer: ""}),
-  methods: {
+    data: () => ({ answer: "" }),
+    methods: {},
   },
 };
 </script>
