@@ -57,7 +57,7 @@ export interface Response {
   HEADING: string;
   ANSWER_TEXT: string;
   MODERATED_TEXT: string;
-  CATEGORY: string;
+  CATEGORY: string | string[];
   DELETED_FLAG: number;
   DONE_MODERATING: number;
   QUESTION_ID: number;

@@ -36,7 +36,6 @@
             <v-combobox
               label="Tags"
               v-model="response.CATEGORY"
-              multiple
               chips
               closable-chips
               variant="outlined"
