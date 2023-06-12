@@ -18,17 +18,17 @@
 
   <base-card showHeader="t" heading="">
     <template v-slot:left>
-
-
       <v-select
         label="Question"
-        :items="['Weekend', 'Moderated']"
+        :items="questions"
         density="compact"
         single-line
         hide-details
+        item-title="TITLE"
+        item-value="ID"
         style="width: 100px"></v-select>
 
-    <!--   <v-text-field
+      <!--   <v-text-field
         v-model="search"
         label="Search"
         single-line
@@ -39,7 +39,7 @@
         class="ml-2"></v-text-field> -->
     </template>
     <template v-slot:right>
-** maybe moderators only see unmoderated, admins see all
+      ** maybe moderators only see unmoderated, admins see all
 
       <v-select
         label="Status"
@@ -59,19 +59,21 @@
 import { mapActions, mapState } from "pinia";
 import { useResponseStore } from "../store";
 import ResponseEditor from "../components/ResponseEditor.vue";
+import { useQuestionStore } from "../../question/store";
 
 export default {
   components: { ResponseEditor },
   data: () => ({
     headers: [
-      { title: "Question", key: "question" },
-      { title: "Date", key: "date" },
-      { title: "Status", key: "status" },
+      { title: "Response", key: "ANSWER_TEXT" },
+      { title: "Deleted", key: "DELETED_FLAG" },
+      { title: "Status", key: "DONE_MODERATING" },
     ],
     search: "",
   }),
   computed: {
     ...mapState(useResponseStore, ["responses"]),
+    ...mapState(useQuestionStore, ["questions"]),
     breadcrumbs() {
       return [
         {
@@ -89,12 +91,13 @@ export default {
   },
   methods: {
     ...mapActions(useResponseStore, ["loadResponses", "select"]),
-
+    ...mapActions(useQuestionStore, ["loadQuestions"]),
     async loadItems() {
       await this.loadResponses();
+      await this.loadQuestions();
     },
     rowClick(event: Event, thing: any) {
-      console.log("TEST")
+      console.log("TEST");
       this.select(thing.item.value);
     },
   },

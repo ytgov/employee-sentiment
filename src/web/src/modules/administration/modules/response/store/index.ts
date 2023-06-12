@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 import { useNotificationStore } from "@/store/NotificationStore";
 import { useApiStore } from "@/store/ApiStore";
-import { QUESTION_URL } from "@/urls";
+import { ANSWER_URL } from "@/urls";
 
 let m = useNotificationStore();
 let api = useApiStore();
@@ -20,52 +20,18 @@ export const useResponseStore = defineStore("response", {
   actions: {
     async initialize() {},
     async loadResponses() {
-      /* await api
-        .secureCall("get", QUESTION_URL)
+      await api
+        .secureCall("get", ANSWER_URL)
         .then((resp) => {
           this.responses = resp.data;
-
-        })
-        .catch(); */
-      this.responses.push({
-        SID: 1,
-        question: "What are you doing this weekend?",
-        date: "Yesterday",
-        status: "Moderated",
-        answer: "Netflix and chill you moron",
-        answer_moderated: "Netflix and chill you moron",
-      });
-      this.responses.push({
-        SID: 1,
-        question: "What are you doing this weekend?",
-        date: "3 days ago",
-        status: "Unmoderated",
-        answer: "Going to the lake",
-        answer_moderated: "Going to the lake",
-      });
-    },
-    async create() {
-      await api
-        .secureCall("post", QUESTION_URL, this.response)
-        .then(async (resp) => {
-          await this.loadResponses();
         })
         .catch();
     },
+
     async update() {
       if (this.response) {
         await api
-          .secureCall("put", `${QUESTION_URL}/${this.response.SID}`, this.response)
-          .then(async (resp) => {
-            await this.loadResponses();
-          })
-          .catch();
-      }
-    },
-    async delete() {
-      if (this.response) {
-        await api
-          .secureCall("delete", `${QUESTION_URL}/${this.response.SID}`, this.response)
+          .secureCall("put", `${ANSWER_URL}/${this.response.ID}`, this.response)
           .then(async (resp) => {
             await this.loadResponses();
           })
@@ -73,7 +39,6 @@ export const useResponseStore = defineStore("response", {
       }
     },
     select(item: Response) {
-      console.log("selected", item);
       this.response = item;
     },
     unselect() {
@@ -88,10 +53,12 @@ export interface ResponseStore {
 }
 
 export interface Response {
-  SID: number;
-  question: string;
-  date: string;
-  status: string;
-  answer: string;
-  answer_moderated: string;
+  ID: number;
+  HEADING: string;
+  ANSWER_TEXT: string;
+  MODERATED_TEXT: string;
+  CATEGORY: string;
+  DELETED_FLAG: number;
+  DONE_MODERATING: number;
+  QUESTION_ID: number;
 }

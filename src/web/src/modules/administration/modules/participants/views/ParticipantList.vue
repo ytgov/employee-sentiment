@@ -34,7 +34,8 @@
       density="comfortable"
       variant="outlined"
       label="Question"
-      :items="questions"
+      :items="earlyStageQuestions"
+      @update:model-value="questionChanged"
       item-title="TITLE"
       item-value="ID"></v-select>
 
@@ -54,18 +55,12 @@
     <v-btn color="primary" @click="parseClick">Parse</v-btn> {{ parseMessage }}
     <v-btn color="primary" @click="saveClick" :disabled="!batchIsValid">Save</v-btn>
 
-    <v-data-table :search="search" :headers="headers" :items="items" :loading="isLoading" @click:row="rowClick">
-      <template v-slot:item.permissions="{ item }">
-        <v-chip color="yg_moss" v-if="item.value.IS_ADMIN">Admin</v-chip>
-        <v-chip color="yg_zinc" v-else-if="item.value.ROLE == 'Moderator'">Moderator</v-chip>
-      </template>
-    </v-data-table>
+    <v-data-table :search="search" :headers="headers" :items="participants"> </v-data-table>
   </base-card>
 </template>
 <script lang="ts">
 import { mapActions, mapState, mapWritableState } from "pinia";
 import { useParticipantsStore } from "../store";
-import { clone } from "lodash";
 import { useQuestionStore } from "../../question/store";
 
 export default {
@@ -73,17 +68,17 @@ export default {
   data: () => ({
     participantType: "",
     headers: [
-      { title: "Name", key: "display_name" },
       { title: "Email", key: "EMAIL" },
-      { title: "Status", key: "STATUS" },
-      { title: "Permisions", key: "permissions" },
+      { title: "Responder", key: "IS_RESPONDER" },
+      { title: "Rater", key: "IS_RATER" },
+      { title: "Submitted", key: "ANSWERS_SUBMITTED" },
     ],
     search: "",
     parseMessage: "",
   }),
   computed: {
     ...mapWritableState(useParticipantsStore, ["batch"]),
-    ...mapState(useParticipantsStore, ["isLoading", "listTypes", "batchIsValid"]),
+    ...mapState(useParticipantsStore, ["isLoading", "listTypes", "batchIsValid", "participants"]),
     ...mapState(useQuestionStore, ["questions"]),
 
     items() {
@@ -103,13 +98,19 @@ export default {
         },
       ];
     },
+    earlyStageQuestions() {
+      if (this.questions) {
+        return this.questions.filter((q) => q.STATE == 0);
+      }
+      return [];
+    },
   },
   beforeMount() {
     this.loadItems();
     this.loadQuestions();
   },
   methods: {
-    ...mapActions(useParticipantsStore, ["parse", "create"]),
+    ...mapActions(useParticipantsStore, ["parse", "create", "getParticipants"]),
     ...mapActions(useQuestionStore, ["loadQuestions"]),
 
     async loadItems() {
@@ -124,6 +125,9 @@ export default {
     },
     async saveClick() {
       await this.create();
+    },
+    async questionChanged() {
+      await this.getParticipants(this.batch.question);
     },
   },
 };
