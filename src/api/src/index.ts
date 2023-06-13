@@ -3,7 +3,7 @@ import cors from "cors";
 import path from "path";
 import helmet from "helmet";
 import { API_PORT, FRONTEND_URL, APPLICATION_NAME, AUTH0_DOMAIN } from "./config";
-import { participantRouter, answerRouter, userRouter } from "./routes";
+import { participantRouter, answerRouter, userRouter, questionRouter } from "./routes";
 import { doHealthCheck } from "./utils/health_check";
 
 const app = express();
@@ -42,7 +42,7 @@ app.get("/_status", (req: Request, res: Response) => {
 });
 
 app.use("/api/user", userRouter);
-app.use("/api/question", answerRouter);
+app.use("/api/question", questionRouter);
 app.use("/api/participant", participantRouter);
 app.use("/api/answer", answerRouter);
 
