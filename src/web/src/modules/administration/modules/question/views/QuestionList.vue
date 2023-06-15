@@ -32,10 +32,6 @@
     </template>
 
     <v-data-table :search="search" :headers="headers" :items="items" :loading="isLoading" @click:row="rowClick">
-      <template v-slot:item.permissions="{ item }">
-        <v-chip color="yg_moss" v-if="item.value.IS_ADMIN == true">Admin</v-chip>
-        <v-chip color="yg_zinc" v-else-if="item.value.ROLE == 'Moderator'">Moderator</v-chip>
-      </template>
     </v-data-table>
   </base-card>
 
@@ -88,7 +84,7 @@ export default {
       await this.loadQuestions();
     },
     rowClick(event: Event, thing: any) {
-      this.select(clone(thing.item.value));
+      this.select(clone(thing.item.raw));
     },
     addQuesionClick() {
       this.select({

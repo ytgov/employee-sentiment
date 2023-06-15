@@ -162,10 +162,7 @@ questionRouter.post(
     let participant = await participantService.getByToken(token);
 
     if (participant) {
-      console.log(participant);
-
-      let answer = await answerService.getById(parseInt(answerId));
-
+      //let answer = await answerService.getById(parseInt(answerId));
       await answerService.saveRating(participant.ID, parseInt(answerId), 1, rating);
 
       return res.json({ data: "success" });

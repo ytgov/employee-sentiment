@@ -33,8 +33,8 @@
 
     <v-data-table :search="search" :headers="headers" :items="items" :loading="isLoading" @click:row="rowClick">
       <template v-slot:item.permissions="{ item }">
-        <v-chip color="yg_moss" v-if="item.value.IS_ADMIN">Admin</v-chip>
-        <v-chip color="yg_zinc" v-else-if="item.value.ROLE == 'Moderator'">Moderator</v-chip>
+        <v-chip color="yg_moss" v-if="item.raw.IS_ADMIN">Admin</v-chip>
+        <v-chip color="yg_zinc" v-else-if="item.raw.ROLE == 'Moderator'">Moderator</v-chip>
       </template>
     </v-data-table>
   </base-card>
@@ -89,7 +89,7 @@ export default {
       await this.getAllUsers();
     },
     rowClick(event: Event, thing: any) {
-      this.selectUser(clone(thing.item.value));
+      this.selectUser(clone(thing.item.raw));
     },
   },
 };

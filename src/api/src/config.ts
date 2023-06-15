@@ -56,6 +56,7 @@ export const DB_CONFIG = {
     database: DB_NAME,
     port: parseInt(DB_PORT),
   },
+  pool: { min: 0, reapIntervalMillis: 600000 },
 };
 
 export const DB_SCHEMA = process.env.DB_SCHEMA || "";
