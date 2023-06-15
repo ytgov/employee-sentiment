@@ -16,41 +16,33 @@
 
   <h1>Responses</h1>
 
+      ** maybe moderators only see unmoderated, admins see all
   <base-card showHeader="t" heading="">
     <template v-slot:left>
       <v-select
         label="Question"
         :items="questions"
+        v-model="question"
         density="compact"
         single-line
         hide-details
         item-title="TITLE"
         item-value="ID"
         style="width: 100px"></v-select>
-
-      <!--   <v-text-field
-        v-model="search"
-        label="Search"
-        single-line
-        hide-details
-        append-inner-icon="mdi-magnify"
-        density="compact"
-        style="width: 100px"
-        class="ml-2"></v-text-field> -->
     </template>
     <template v-slot:right>
-      ** maybe moderators only see unmoderated, admins see all
 
       <v-select
         label="Status"
         :items="['Unmoderated', 'Moderated']"
+        v-model="status"
         density="compact"
         single-line
         hide-details
         style="width: 100px"></v-select>
     </template>
 
-    <v-data-table :search="search" :headers="headers" :items="responses" @click:row="rowClick"> </v-data-table>
+    <v-data-table :search="search" :headers="headers" :items="filteredList" @click:row="rowClick"> </v-data-table>
   </base-card>
 
   <response-editor></response-editor>
@@ -65,11 +57,14 @@ export default {
   components: { ResponseEditor },
   data: () => ({
     headers: [
+      { title: "Category", key: "CATEGORY" },
       { title: "Response", key: "ANSWER_TEXT" },
       { title: "Deleted", key: "DELETED_FLAG" },
-      { title: "Status", key: "DONE_MODERATING" },
+      { title: "Complete", key: "DONE_MODERATING" },
     ],
     search: "",
+    question: 0,
+    status: "Unmoderated",
   }),
   computed: {
     ...mapState(useResponseStore, ["responses"]),
@@ -85,6 +80,20 @@ export default {
         },
       ];
     },
+    filteredList() {
+      let items = this.responses;
+      if (this.question) {
+        items = items.filter((i) => i.QUESTION_ID == this.question);
+      }
+
+      if (this.status == "Moderated") {
+        items = items.filter((i) => (i.DONE_MODERATING == 1));
+      } else if (this.status == "Unmoderated") {
+        items = items.filter((i) => (i.DONE_MODERATING == 0));
+      }
+
+      return items;
+    },
   },
   beforeMount() {
     this.loadItems();
@@ -95,9 +104,12 @@ export default {
     async loadItems() {
       await this.loadResponses();
       await this.loadQuestions();
+
+      if (this.questions.length > 0 && this.questions[0].ID) {
+        this.question = this.questions[0].ID || 0;
+      }
     },
     rowClick(event: Event, thing: any) {
-      console.log("TEST");
       this.select(thing.item.value);
     },
   },

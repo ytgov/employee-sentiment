@@ -19,6 +19,10 @@ const routes = [
         path: "rating/:surveyId",
         component: () => import("../views/Rating.vue"),
       },
+      {
+        path: "rating/complete",
+        component: () => import("../views/RatingComplete.vue"),
+      },
     ],
   },
 ];

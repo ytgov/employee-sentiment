@@ -39,6 +39,7 @@ export const useResponseStore = defineStore("response", {
       }
     },
     select(item: Response) {
+      if (!item.MODERATED_TEXT || item.MODERATED_TEXT.length == 0) item.MODERATED_TEXT = item.ANSWER_TEXT;
       this.response = item;
     },
     unselect() {
@@ -57,8 +58,9 @@ export interface Response {
   HEADING: string;
   ANSWER_TEXT: string;
   MODERATED_TEXT: string;
-  CATEGORY: string | string[];
+  CATEGORY: string;
   DELETED_FLAG: number;
   DONE_MODERATING: number;
   QUESTION_ID: number;
+  MODERATOR_NOTES: string | undefined;
 }

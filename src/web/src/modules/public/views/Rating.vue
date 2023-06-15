@@ -1,73 +1,59 @@
 <template>
-  <h1 class="mt-0">{{ survey.survey.PAGE_TITLE }}</h1>
+  <h1 class="mt-0">We want to know what you think of the following responses</h1>
   <p class="mb-4" style="font-size: 1.2rem; font-weight: 300">
-    {{ survey.survey.DESCRIPTION }}
+    Below are a random list of responses that we heard from other participants. Please indicate your rating on each item
+    then click submit. If you would like to rate additional answers, that's great too.
   </p>
 
   <v-divider class="my-4" />
 
-  <label class="v-label" style="font-weight: 300">We asked:</label>
+  <div v-if="question">
+    <label class="v-label" style="font-weight: 300">We asked:</label>
 
-  <div v-for="(question, idx) of survey.questions" :key="idx">
+    <h4>{{ question.DISPLAY_TEXT }}</h4>
+    <!-- <div v-for="(question, idx) of survey.questions" :key="idx">
     {{ question.ASK }}
+  </div> -->
+
+    <label class="v-label mt-6 mb-2" style="font-weight: 300">We heard:</label>
+
+    <v-card elevation="0" class="mb-3" v-for="(item, idx) of responses">
+      <v-card-text>
+        <p>{{ item.ANSWER_TEXT }}</p>
+
+        <v-rating clearable color="primary" density="comfortable" v-model="item.rating"></v-rating>
+      </v-card-text>
+    </v-card>
   </div>
-
-  <label class="v-label mt-6 mb-2" style="font-weight: 300">We heard:</label>
-
-  <v-card elevation="0" class="mb-3">
-    <v-card-text>
-      <p>I really like to go skiing, but it's summer so I will go water skiing.</p>
-
-      <v-rating clearable color="primary" density="comfortable"></v-rating>
-    </v-card-text>
-  </v-card>
-
-  <v-card elevation="0" class="mb-3">
-    <v-card-text>
-      <p>I probably will walk my dogs then take a nap.</p>
-
-      <v-rating clearable label="What did you think of this response?" color="primary" density="comfortable"
-        >Reat</v-rating
-      >
-    </v-card-text>
-  </v-card>
-
-  <v-card elevation="0" class="mb-3">
-    <v-card-text>
-      <p>I really like to go skiing, but it's summer so I will go water skiing.</p>
-
-      <v-rating clearable color="primary" density="comfortable"></v-rating>
-    </v-card-text>
-  </v-card>
-
   <v-divider class="my-4" />
-  <v-btn color="primary"> Submit </v-btn>
+  <v-btn color="primary" @click="submitClick"> Submit </v-btn>
   <v-btn color="primary" class="ml-5"> Submit and Rate More </v-btn>
 </template>
 
 <script>
 import { mapActions, mapState } from "pinia";
 import { usePublicStore } from "../store";
-//import QuestionRenderer from "../components/question-renderer.vue";
 
 export default {
-  //components: { QuestionRenderer },
   data: () => ({
     moveOn: false,
   }),
   async mounted() {
     let token = this.$route.params.surveyId;
     await this.loadSurvey(token);
+    await this.loadResponses(token);
   },
 
   computed: {
-    ...mapState(usePublicStore, ["survey", "allValid"]),
+    ...mapState(usePublicStore, ["question", "allValid", "responses"]),
   },
   methods: {
-    ...mapActions(usePublicStore, ["loadSurvey"]),
+    ...mapActions(usePublicStore, ["loadSurvey", "loadResponses", "saveRatings"]),
 
-    submitSurvey() {
-      this.$router.push("/survey/1/complete");
+    async submitClick() {
+      await this.saveRatings(this.$route.params.surveyId).then((r) => {
+        this.$router.push(`/rating/complete`);
+      });
     },
   },
 };

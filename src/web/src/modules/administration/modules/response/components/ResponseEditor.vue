@@ -20,31 +20,51 @@
           readonly
           variant="outlined"
           density="comfortable"
+          rows="3"
           append-inner-icon="mdi-lock"></v-textarea>
         <v-textarea
           label="Moderated response"
           v-model="response.MODERATED_TEXT"
           :error="response.MODERATED_TEXT != response.ANSWER_TEXT"
           variant="outlined"
-          density="comfortable"></v-textarea>
+          density="comfortable"
+          rows="3"></v-textarea>
+        <v-textarea
+          label="Moderator notes"
+          v-model="response.MODERATOR_NOTES"
+          variant="outlined"
+          density="comfortable"
+          rows="3"></v-textarea>
         <v-row>
-          <v-col cols="12" md="6">
+          <!-- <v-col cols="12" md="6">
             <v-checkbox label="Duplicate response?" hide-details class="my-0 py-0"></v-checkbox>
             <v-checkbox label="Inappropriate?" hide-details class="my-0 py-0"></v-checkbox>
-          </v-col>
+          </v-col> -->
           <v-col cols="12" md="6">
             <v-combobox
-              label="Tags"
+              label="Category"
               v-model="response.CATEGORY"
-              chips
-              closable-chips
+              clearable
               variant="outlined"
               density="comfortable"></v-combobox>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-select
+              label="Visibility"
+              v-model="response.DELETED_FLAG"
+              :items="[
+                { title: 'Visible', value: 0 },
+                { title: 'Deleted', value: 1 },
+              ]"
+              item-title="title"
+              item-value="value"
+              variant="outlined"
+              density="comfortable"></v-select>
           </v-col>
         </v-row>
       </v-card-text>
       <v-card-actions class="mx-4 mb-2">
-        <v-btn color="primary" variant="flat" @click="saveClick">Save</v-btn>
+        <v-btn color="primary" variant="flat" @click="saveClick">Moderation Complete</v-btn>
         <v-spacer></v-spacer>
         <v-btn color="yg_sun" variant="outlined" @click="close">Close</v-btn>
       </v-card-actions>
@@ -71,9 +91,13 @@ export default {
       this.unselect();
     },
     saveClick() {
-      this.update().then(() => {
-        this.close();
-      });
+      if (this.response) {
+        this.response.DONE_MODERATING = 1;
+
+        this.update().then(() => {
+          this.close();
+        });
+      }
     },
   },
 };

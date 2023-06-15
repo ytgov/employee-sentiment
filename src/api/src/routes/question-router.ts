@@ -10,6 +10,8 @@ import { Answer } from "src/data/models";
 export const questionRouter = express.Router();
 
 const questionService = new QuestionService();
+const answerService = new AnswerService();
+const participantService = new ParticipantService();
 const emailService = new EmailService();
 
 questionRouter.get("/", async (req: Request, res: Response) => {
@@ -40,6 +42,13 @@ questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Requ
   let token = "123456789";
 
   await emailService.sendOpinionatorEmail(
+    { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
+    subject,
+    body,
+    token
+  );
+
+  await emailService.sendRaterEmail(
     { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
     subject,
     body,
@@ -127,6 +136,46 @@ questionRouter.get(
 );
 
 questionRouter.get(
+  "/:token/responses",
+  [param("token").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { token } = req.params;
+    let question = await returnQuestion(token, false);
+
+    if (question) {
+      let answers = await answerService.getSampleForQuestion(question.data.ID, 4);
+      return res.json({ data: answers });
+    }
+
+    res.status(404).send();
+  }
+);
+
+questionRouter.post(
+  "/:token/responses/:answerId",
+  [param("token").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { token, answerId } = req.params;
+    let { rating } = req.body;
+    let participant = await participantService.getByToken(token);
+
+    if (participant) {
+      console.log(participant);
+
+      let answer = await answerService.getById(parseInt(answerId));
+
+      await answerService.saveRating(participant.ID, parseInt(answerId), 1, rating);
+
+      return res.json({ data: "success" });
+    }
+
+    res.status(404).send();
+  }
+);
+
+questionRouter.get(
   "/:token/preview",
   [param("token").notEmpty()],
   ReturnValidationErrors,
@@ -160,7 +209,7 @@ questionRouter.post(
         QUESTION_ID: participant.QUESTION_ID,
         HEADING: "Uknown",
         IS_EXTRA: 0,
-        OWNER_HASH: participant.RANDOM_NOUNCE
+        OWNER_HASH: participant.RANDOM_NOUNCE,
       } as Answer;
 
       await questionService.createAnswer(newAnswer);
