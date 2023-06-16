@@ -1,9 +1,8 @@
 import express, { Request, Response } from "express";
-import { ReturnValidationErrors } from "../middleware";
-import { param } from "express-validator";
 import { ParticipantService } from "../services";
 import { Participant } from "src/data/models";
-import { getRandomValues } from "crypto";
+//import { getRandomValues } from "crypto";
+import { getRandomValues } from "node:crypto";
 
 export const participantRouter = express.Router();
 
