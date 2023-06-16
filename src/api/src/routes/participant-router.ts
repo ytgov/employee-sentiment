@@ -1,8 +1,6 @@
 import express, { Request, Response } from "express";
 import { ParticipantService } from "../services";
 import { Participant } from "src/data/models";
-//import { getRandomValues } from "crypto";
-import { getRandomValues } from "node:crypto";
 
 export const participantRouter = express.Router();
 
@@ -65,9 +63,9 @@ participantRouter.put("/:id", async (req: Request, res: Response) => {
 });
 
 function makeToken() {
-  return Array.from(getRandomValues(new Uint32Array(3)), dec2hex).join("");
-}
+  const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
+  const randomArray = Array.from({ length: 24 }, (v, k) => chars[Math.floor(Math.random() * chars.length)]);
 
-function dec2hex(dec: any) {
-  return dec.toString(16).padStart(2, "0");
+  const randomString = randomArray.join("");
+  return randomString;
 }
