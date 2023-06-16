@@ -139,7 +139,7 @@ export default {
       return [
         {
           title: "Administration",
-          to: "/administration",
+          to: "/dashboard",
         },
         {
           title: "Emailer",

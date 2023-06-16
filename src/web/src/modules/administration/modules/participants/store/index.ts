@@ -72,6 +72,8 @@ export const useParticipantsStore = defineStore("participants", {
         .secureCall("post", PARTICIPANT_URL, this.batch)
         .then(async (resp) => {
           await this.loadResponses();
+          await this.getParticipants(this.batch.question);
+          m.notify({ text: "Participants saved", variant: "success" });
         })
         .catch();
     },
@@ -81,6 +83,8 @@ export const useParticipantsStore = defineStore("participants", {
           .secureCall("put", `${PARTICIPANT_URL}/${this.batch.SID}`, this.batch)
           .then(async (resp) => {
             await this.loadResponses();
+            await this.getParticipants(this.batch.question);
+            m.notify({ text: "Participants saved", variant: "success" });
           })
           .catch();
       }
