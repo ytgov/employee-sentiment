@@ -146,7 +146,7 @@ questionRouter.get(
     let { token } = req.params;
     let question = await returnQuestion(token, false);
 
-    if (question) {
+    if (question && question.data && question.data.ID) {
       let answers = await answerService.getSampleForQuestion(question.data.ID, 4);
       return res.json({ data: answers });
     }
