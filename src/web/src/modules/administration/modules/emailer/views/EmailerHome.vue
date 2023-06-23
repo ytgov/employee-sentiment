@@ -81,8 +81,13 @@
           variant="outlined"
           rows="3"></v-textarea>
 
-          <v-label>Use <pre>``QUESTION_URL``</pre> for Answer</v-label>
-          <v-label>Use ``RATING_URL`` for Rating</v-label>
+        <ul>
+          <li>Use <b>``QUESTION_URL``</b> for link to Opinionator page</li>
+          <li>Use <b>``RATING_URL``</b> for link to Rater page</li>
+        </ul>
+
+        <v-label></v-label>
+        <v-label></v-label>
 
         <div class="d-flex">
           <v-btn color="primary" :disabled="!emailValid" @click="sendTestClick">Send Test</v-btn>

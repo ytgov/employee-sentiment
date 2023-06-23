@@ -23,7 +23,7 @@ export const usePublicStore = defineStore("public", {
   }),
   getters: {
     allValid(state) {
-      return true;
+      return state.answer && state.answer.length > 0;
     },
   },
   actions: {

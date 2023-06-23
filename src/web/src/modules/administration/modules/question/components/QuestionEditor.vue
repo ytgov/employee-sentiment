@@ -12,9 +12,15 @@
           v-model="question.DISPLAY_TEXT"
           variant="outlined"
           rows="3"
-          density="comfortable"></v-textarea>
-
-        <v-text-field label="Owner" v-model="question.OWNER" variant="outlined" density="comfortable"></v-text-field>
+          density="comfortable" />
+        <v-select
+          label="Owner"
+          v-model="question.OWNER"
+          variant="outlined"
+          density="comfortable"
+          :items="users"
+          item-title="EMAIL"
+          item-value="email" />
         <v-row>
           <v-col cols="6">
             <v-text-field
@@ -54,7 +60,8 @@
         </v-row>
 
         <v-autocomplete
-          :items="moderators" multiple
+          :items="moderators"
+          multiple
           item-title="display_name"
           label="Moderators"
           variant="outlined"
@@ -79,7 +86,7 @@ export default {
   data: () => ({}),
   computed: {
     ...mapState(useQuestionStore, ["question"]),
-    ...mapState(useUserAdminStore, ["moderators"]),
+    ...mapState(useUserAdminStore, ["moderators", "users"]),
     visible() {
       return this.question ? true : false;
     },

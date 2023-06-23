@@ -41,19 +41,22 @@ questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Requ
   let { subject, body, recipients } = req.body;
   let token = "123456789";
 
-  await emailService.sendOpinionatorEmail(
-    { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
-    subject,
-    body,
-    token
-  );
-
-  await emailService.sendRaterEmail(
-    { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
-    subject,
-    body,
-    token
-  );
+  if (recipients.includes("Opinionators")) {
+    await emailService.sendOpinionatorEmail(
+      { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
+      `[TEST EMAIL]: ${subject}`,
+      body,
+      token
+    );
+  }
+  if (recipients.includes("Raters")) {
+    await emailService.sendRaterEmail(
+      { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
+      `[TEST EMAIL]: ${subject}`,
+      body,
+      token
+    );
+  }
 
   res.json({ data: "sent" });
 });

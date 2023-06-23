@@ -58,21 +58,22 @@
               <v-label v-if="question.answers_remaining > 0" class="my-3"
                 >You can submit up to {{ question.answers_remaining }} more responses</v-label
               >
+              <div class="text-right">
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="primary"
+                  class="mb-4"
+                  :disabled="!allValid"
+                  @click="submitSurvey"
+                  v-if="question.answers_remaining > 0">
+                  Submit </v-btn
+                ><br />
+                <v-btn color="info" @click="doneClick"> I'm done </v-btn>
+              </div>
             </v-card-text>
           </v-card>
         </div>
       </div>
-
-      <div class="text-right">
-        <v-spacer></v-spacer>
-        <v-btn color="primary" class="mb-4" :disabled="!allValid" @click="submitSurvey" v-if="question.answers_remaining > 0">
-          Submit
-        </v-btn><br>
-        <v-btn color="info" @click="doneClick"> I'm done </v-btn>
-      </div>
-      <span style="font-size: 0.9rem" class="pl-4 text-error" v-if="!allValid">
-        * Not all required questions have answers (look for the red asterisks next to the question)
-      </span>
     </div>
   </div>
   <div v-else-if="!isLoading">Question not found</div>
