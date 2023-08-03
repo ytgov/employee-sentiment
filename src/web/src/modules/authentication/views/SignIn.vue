@@ -45,11 +45,29 @@ export default {
     applicationSubtitle: "Public Service Commission",
   }),
   mounted() {
-    if (this.$auth0.isAuthenticated.value) this.$router.push("/dashboard");
+    if (this.$auth.isAuthenticated.value) this.$router.push("/dashboard");
   },
+
+  watch: {
+    authIsLoading(oldV, newV) {
+      if (newV == true) {
+        if (this.$auth.isAuthenticated.value) {
+          this.$router.push("/dashboard");
+        } else {
+          this.$router.push("/sign-in");
+        }
+      }
+    },
+  },
+  computed: {
+    authIsLoading(): boolean {
+      return this.$auth.isLoading.value;
+    },
+  },
+
   methods: {
     login() {
-      this.$auth0.loginWithRedirect({
+      this.$auth.loginWithRedirect({
         appState: { target: window.location.pathname },
       });
     },

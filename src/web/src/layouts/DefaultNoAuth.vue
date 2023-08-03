@@ -66,7 +66,7 @@ export default {
   },
 
   async mounted() {
-    this.showOverlay = false;
+    this.showOverlay = false;    
   },
   methods: {},
 };

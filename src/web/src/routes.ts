@@ -7,10 +7,11 @@ import publicRoutes from "@/modules/public/router";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
+
     children: [
+      ...homeRoutes,
       ...publicRoutes,
       ...authenticationRoutes,
-      ...homeRoutes,
       ...adminstrationRoutes,
 
       {

@@ -4,10 +4,6 @@ const routes = [
     component: () => import("@/layouts/DefaultNoAuth.vue"),
     children: [
       {
-        path: "",
-        component: () => import("../views/Home.vue"),
-      },
-      {
         path: "question/:surveyId",
         component: () => import("../views/Survey.vue"),
       },

@@ -3,12 +3,11 @@ import { authGuard } from "@auth0/auth0-vue";
 const routes = [
   {
     path: "",
-    component: () => import("@/layouts/Default.vue"),
+    component: () => import("@/layouts/DefaultNoAuth.vue"),
     children: [
       {
-        path: "/dashboard",
-        component: () => import("../views/Dashboard.vue"),
-        beforeEnter: authGuard,
+        path: "/",
+        component: () => import("../views/Home.vue"),
       },
       {
         path: "/profile",

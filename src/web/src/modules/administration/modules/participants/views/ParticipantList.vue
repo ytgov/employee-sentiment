@@ -161,7 +161,6 @@ export default {
       await this.getParticipants(this.batch.question);
     },
     async deleteClick(participantId: any) {
-      console.log("DELETE", participantId);
       await this.deleteParticipant(this.batch.question, participantId);
     },
 

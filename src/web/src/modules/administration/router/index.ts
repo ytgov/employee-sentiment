@@ -6,6 +6,11 @@ const routes = [
     component: () => import("@/layouts/Default.vue"),
     children: [
       {
+        path: "/dashboard",
+        component: () => import("../views/Dashboard.vue"),
+        beforeEnter: authGuard,
+      },
+      {
         path: "/administration",
         component: () => import("../views/Administration.vue"),
         beforeEnter: authGuard,
