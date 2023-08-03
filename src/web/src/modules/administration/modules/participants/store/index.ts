@@ -11,7 +11,7 @@ export const useParticipantsStore = defineStore("participants", {
   state: (): ParticipantStore => ({
     isLoading: false,
     responses: new Array<Response>(),
-    batch: { participants: "", question: undefined, addresses: [] },
+    batch: { participants: "", participant_type: "Opinionator", question: undefined, addresses: [] },
     listTypes: ["Opinionator", "Rater"],
     participants: new Array<any>(),
   }),
@@ -102,6 +102,16 @@ export const useParticipantsStore = defineStore("participants", {
         .secureCall("get", `${PARTICIPANT_URL}/${questionId}`)
         .then(async (resp) => {
           this.participants = resp.data;
+        })
+        .catch();
+    },
+
+    async deleteParticipant(questionId: number, id: number) {
+      await api
+        .secureCall("delete", `${PARTICIPANT_URL}/${id}`)
+        .then(async (resp) => {
+          this.getParticipants(questionId);
+          m.notify({ variant: "success", text: "Participant removed" });
         })
         .catch();
     },

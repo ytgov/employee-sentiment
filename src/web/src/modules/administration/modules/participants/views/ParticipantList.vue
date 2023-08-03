@@ -18,44 +18,73 @@
 
   <base-card showHeader="t" heading="" elevation="0">
     <template v-slot:left>
+      <v-select
+        v-model="batch.question"
+        density="compact"
+        label="Question"
+        :items="earlyStageQuestions"
+        @update:model-value="questionChanged"
+        item-title="TITLE"
+        hide-details
+        class="ml-2"
+        item-value="ID"></v-select>
+    </template>
+    <template v-slot:right>
       <v-text-field
         v-model="search"
         label="Search"
         single-line
         hide-details
         append-inner-icon="mdi-magnify"
-        density="compact"
-        class="ml-2"></v-text-field>
+        class="mr-2"
+        density="compact"></v-text-field>
     </template>
-    <template v-slot:right> </template>
+    <v-row>
+      <v-col>
+        <v-btn @click="openEditor" color="primary" variant="tonal" class="float-right" :disabled="!batch.question"
+          >Add Participants</v-btn
+        >
+      </v-col>
+    </v-row>
 
-    <v-select
-      v-model="batch.question"
-      density="comfortable"
-      variant="outlined"
-      label="Question"
-      :items="earlyStageQuestions"
-      @update:model-value="questionChanged"
-      item-title="TITLE"
-      item-value="ID"></v-select>
+    <v-data-table :search="search" :headers="headers" :items="participants">
+      <template v-slot:item.actions="{ item }">
+        <div>
+          <v-btn icon="mdi-delete" variant="tonal" color="warning" @click="deleteClick(item.raw.ID)"></v-btn>
+        </div>
+      </template>
+    </v-data-table>
 
-    <v-select
-      label="Type"
-      :items="listTypes"
-      density="comfortable"
-      variant="outlined"
-      v-model="batch.participant_type"></v-select>
+    <v-dialog v-model="visible" persistent max-width="700">
+      <v-card>
+        <v-toolbar color="primary" variant="dark" title="Add Participants">
+          <v-spacer></v-spacer>
+          <v-btn icon @click="closeEditor" color="white"><v-icon>mdi-close</v-icon></v-btn>
+        </v-toolbar>
+        <v-card-text>
+          <v-select
+            label="Type"
+            :items="listTypes"
+            density="comfortable"
+            variant="outlined"
+            v-model="batch.participant_type"></v-select>
 
-    <v-textarea
-      v-model="batch.participants"
-      variant="outlined"
-      density="comfortable"
-      bg-color="white"
-      label="Participants"></v-textarea>
-    <v-btn color="primary" @click="parseClick">Parse</v-btn> {{ parseMessage }}
-    <v-btn color="primary" @click="saveClick" :disabled="!batchIsValid">Save</v-btn>
+          <v-textarea
+            v-model="batch.participants"
+            variant="outlined"
+            density="comfortable"
+            bg-color="white"
+            label="Participants"></v-textarea>
 
-    <v-data-table :search="search" :headers="headers" :items="participants"> </v-data-table>
+          <div class="d-flex mb-3">
+            <v-btn color="success" @click="parseClick">Parse</v-btn>
+            <div class="ml-4 pt-2">{{ parseMessage }}</div>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click="saveClick" :disabled="!batchIsValid">Save</v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </base-card>
 </template>
 <script lang="ts">
@@ -68,6 +97,7 @@ export default {
   data: () => ({
     participantType: "",
     headers: [
+      { title: "", key: "actions", width: "60px" },
       { title: "Email", key: "EMAIL" },
       { title: "Responder", key: "IS_RESPONDER" },
       { title: "Rater", key: "IS_RATER" },
@@ -75,6 +105,7 @@ export default {
     ],
     search: "",
     parseMessage: "",
+    visible: false,
   }),
   computed: {
     ...mapWritableState(useParticipantsStore, ["batch"]),
@@ -110,7 +141,7 @@ export default {
     this.loadQuestions();
   },
   methods: {
-    ...mapActions(useParticipantsStore, ["parse", "create", "getParticipants"]),
+    ...mapActions(useParticipantsStore, ["parse", "create", "getParticipants", "deleteParticipant"]),
     ...mapActions(useQuestionStore, ["loadQuestions"]),
 
     async loadItems() {
@@ -128,6 +159,17 @@ export default {
     },
     async questionChanged() {
       await this.getParticipants(this.batch.question);
+    },
+    async deleteClick(participantId: any) {
+      console.log("DELETE", participantId);
+      await this.deleteParticipant(this.batch.question, participantId);
+    },
+
+    openEditor() {
+      this.visible = true;
+    },
+    closeEditor() {
+      this.visible = false;
     },
   },
 };

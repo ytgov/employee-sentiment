@@ -29,7 +29,22 @@ export class ParticipantService implements GenericService<Participant> {
   }
 
   async create(item: any): Promise<any> {
-    return db(DB_PARTICIPANT_TABLE).withSchema(DB_SCHEMA).insert(item).returning("*");
+    let existing = await db(DB_PARTICIPANT_TABLE)
+      .withSchema(DB_SCHEMA)
+      .where({ EMAIL: item.EMAIL, QUESTION_ID: item.QUESTION_ID });
+
+    // only insert if it's not already there
+    if (existing && existing.length > 0) {
+      let existingRater = existing.filter((e) => e.IS_RATER == 1);
+      let existingResponder = existing.filter((e) => e.IS_RESPONDER == 1);
+
+      if (item.IS_RATER && existingRater.length == 0)
+        return db(DB_PARTICIPANT_TABLE).withSchema(DB_SCHEMA).insert(item).returning("*");
+      if (item.IS_RESPONDER && existingResponder.length == 0)
+        return db(DB_PARTICIPANT_TABLE).withSchema(DB_SCHEMA).insert(item).returning("*");
+    } else {
+      return db(DB_PARTICIPANT_TABLE).withSchema(DB_SCHEMA).insert(item).returning("*");
+    }
   }
 
   async update(ID: number, item: any): Promise<Participant> {

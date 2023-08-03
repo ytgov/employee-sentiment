@@ -18,22 +18,13 @@ participantRouter.post("/", async (req: Request, res: Response) => {
   for (let address of addresses) {
     let p = {} as Participant;
     p.IS_RESPONDER = participant_type == "Opinionator" ? 1 : 0;
+    p.IS_RATER = participant_type == "Rater" ? 1 : 0;
     p.QUESTION_ID = question;
     p.EMAIL = address;
     p.RANDOM_NOUNCE = makeToken();
 
     await participantService.create(p);
   }
-
-  /* let question = await participantService.create({
-    CURRENT_RATING_TRANCHE,
-    DISPLAY_TEXT,
-    MAX_ANSWERS,
-    OWNER,
-    RATINGS_PER_TRANCHE,
-    STATE,
-    TITLE,
-  }); */
 
   res.json({ data: "TEST" });
 });
@@ -60,6 +51,14 @@ participantRouter.put("/:id", async (req: Request, res: Response) => {
   });
 
   res.json({ data: question });
+});
+
+participantRouter.delete("/:id", async (req: Request, res: Response) => {
+  let { id } = req.params;
+
+  await participantService.delete(parseInt(id));
+
+  res.json({ data: "TEST" });
 });
 
 function makeToken() {
