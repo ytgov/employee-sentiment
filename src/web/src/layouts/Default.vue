@@ -90,7 +90,8 @@ export default {
       return "Employee Sentiment";
     },
     username() {
-      return this.authUser.name || "";
+      if (this.authUser) return this.authUser.name || "";
+      return "";
     },
   },
 
