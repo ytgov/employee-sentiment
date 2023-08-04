@@ -24,7 +24,7 @@
               <v-list-item-title style="font-size: 0.9rem !important">My profile</v-list-item-title>
             </v-list-item>
 
-           <!--  <v-list-item to="/">
+            <!--  <v-list-item to="/">
               <template v-slot:prepend>
                 <v-icon>mdi-home-export-outline</v-icon>
               </template>
@@ -47,8 +47,7 @@
           </v-list>
         </v-menu>
       </div>
-      <div v-else>
-      </div>
+      <div v-else></div>
     </template>
   </v-app-bar>
 
@@ -91,7 +90,7 @@ export default {
       return "Employee Sentiment";
     },
     username() {
-      return this.authUser.name;
+      return this.authUser.name || "";
     },
   },
 
