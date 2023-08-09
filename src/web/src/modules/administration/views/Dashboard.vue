@@ -17,20 +17,21 @@
   <h1>Employee Sentiment Dashboard</h1>
 
   <v-row>
-    <v-col cols="4">
-      <v-card elevation="3" color="#7A9A0166" to="/administration/questions">
-        <v-card-text style="text-align: right; color: white">
+    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y' || user.ROLE == 'Moderator'">
+      <v-card elevation="3" color="#7A9A0166" to="/administration/participants">
+        <v-card-text style="text-align: right">
           <v-icon
             class="float-left"
             style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
-            >mdi-head-question</v-icon
+            >mdi-account-group</v-icon
           >
-          <div style="font-size: 52px; line-height: 52px">{{ questionCount }}</div>
-          <div>Questions</div>
+          <div style="font-size: 52px; line-height: 52px">&nbsp</div>
+          <div>Participants</div>
         </v-card-text>
       </v-card>
     </v-col>
-    <v-col cols="4">
+
+    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y' || user.ROLE == 'Moderator'">
       <v-card elevation="3" color="#0097a966">
         <v-card-text style="text-align: right" color="white">
           <v-icon
@@ -43,7 +44,7 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <v-col cols="4">
+    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y' || user.ROLE == 'Moderator'">
       <v-card elevation="3" color="#F2A90066" to="/administration/moderation">
         <v-card-text style="text-align: right">
           <v-icon
@@ -56,18 +57,55 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <!-- 
-    <v-col cols="12">
-      <v-card elevation="3" color="#7A9A0166">
-        <v-card-text style="text-align: right"> </v-card-text>
+
+    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+      <v-card elevation="3" color="#F2760C66" to="/administration/questions">
+        <v-card-text style="text-align: right;">
+          <v-icon
+            class="float-left"
+            style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
+            >mdi-head-question</v-icon
+          >
+          <div style="font-size: 52px; line-height: 52px">{{ questionCount }}</div>
+          <div>Questions</div>
+        </v-card-text>
       </v-card>
-    </v-col> -->
+    </v-col>
+    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+      <v-card elevation="3" color="#F2760C66" to="/administration/users">
+        <v-card-text style="text-align: right">
+          <v-icon
+            class="float-left"
+            style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
+            >mdi-account-multiple</v-icon
+          >
+          <div style="font-size: 52px; line-height: 52px">{{ userCount }}</div>
+          <div>Users</div>
+        </v-card-text>
+      </v-card>
+    </v-col>
+
+    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+      <v-card elevation="3" color="#F2760C66" to="/administration/emailer">
+        <v-card-text style="text-align: right">
+          <v-icon
+            class="float-left"
+            style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
+            >mdi-email</v-icon
+          >
+          <div style="font-size: 52px; line-height: 52px">&nbsp</div>
+          <div>Emailer</div>
+        </v-card-text>
+      </v-card>
+    </v-col>
   </v-row>
 </template>
 
 <script lang="ts">
 import { useQuestionStore } from "@/modules/administration/modules/question/store";
 import { mapActions, mapState } from "pinia";
+import { useUserAdminStore } from "../modules/users/store";
+import { useUserStore } from "@/store/UserStore";
 
 export default {
   name: "Dashboard",
@@ -76,12 +114,18 @@ export default {
   }),
   computed: {
     ...mapState(useQuestionStore, ["questionCount", "responseCount", "moderateCount"]),
+    ...mapState(useUserAdminStore, ["userCount"]),
+    ...mapState(useUserStore, ["user"]),
   },
   async mounted() {
     await this.initialize();
+    await this.getAllUsers();
+    await this.loadQuestions();
   },
   methods: {
     ...mapActions(useQuestionStore, ["initialize"]),
+    ...mapActions(useUserAdminStore, ["getAllUsers"]),
+    ...mapActions(useQuestionStore, ["loadQuestions"]),
   },
 };
 </script>

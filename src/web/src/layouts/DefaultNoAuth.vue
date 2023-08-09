@@ -4,28 +4,7 @@
     <!-- <v-img class="ml-0m pl-0" src="src/assets/yukon.svg" height="44" /> -->
     <v-app-bar-title class="pt-0 font-weight-bold" style="margin-left: -20px">{{ title }}</v-app-bar-title>
 
-    <template v-slot:append>
-      <v-btn color="primary" class="mr-1" to="/" exact icon="mdi-home"></v-btn>
-
-      <v-divider class="mr-5" vertical inset></v-divider>
-      <span style="font-size: 0.9rem"></span>
-
-      <v-menu offset-y>
-        <template v-slot:activator="{ props }">
-          <v-btn icon="mdi-dots-vertical" color="primary" v-bind="props"></v-btn>
-        </template>
-
-        <v-list density="compact">
-          <v-list-item to="/sign-in">
-            <template v-slot:prepend>
-              <v-icon>mdi-login</v-icon>
-            </template>
-            <v-list-item-title style="font-size: 0.9rem !important">Sign In</v-list-item-title>
-          </v-list-item>
-          <v-divider />
-        </v-list>
-      </v-menu>
-    </template>
+    <template v-slot:append></template>
   </v-app-bar>
 
   <v-main>
@@ -45,12 +24,8 @@
 </template>
 
 <script lang="ts">
-import { useUserStore } from "@/store/UserStore";
-import { useNotificationStore } from "@/store/NotificationStore";
-import { mapState, mapActions, mapWritableState } from "pinia";
-
 export default {
-  name: "Default",
+  name: "DefaultNoAuth",
 
   data() {
     return {
@@ -58,15 +33,13 @@ export default {
     };
   },
   computed: {
-    ...mapWritableState(useNotificationStore, ["showNotification"]),
-
     title() {
       return "Employee Sentiment";
     },
   },
 
   async mounted() {
-    this.showOverlay = false;    
+    this.showOverlay = false;
   },
   methods: {},
 };

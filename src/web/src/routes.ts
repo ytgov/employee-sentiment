@@ -15,8 +15,24 @@ const routes: Array<RouteRecordRaw> = [
       ...adminstrationRoutes,
 
       {
-        path: "*",
-        component: () => import("@/views/NotFound.vue"),
+        path: "/NotAuthorized",
+        component: () => import("@/layouts/DefaultNoAuth.vue"),
+        children: [
+          {
+            path: "",
+            component: () => import("@/views/NotAuthorized.vue"),
+          },
+        ],
+      },
+      {
+        path: "/:pathMatch(.*)*",
+        component: () => import("@/layouts/DefaultNoAuth.vue"),
+        children: [
+          {
+            path: "",
+            component: () => import("@/views/NotFound.vue"),
+          },
+        ],
       },
     ],
   },

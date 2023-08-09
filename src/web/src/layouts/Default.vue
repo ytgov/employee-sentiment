@@ -24,19 +24,6 @@
               <v-list-item-title style="font-size: 0.9rem !important">My profile</v-list-item-title>
             </v-list-item>
 
-            <!--  <v-list-item to="/">
-              <template v-slot:prepend>
-                <v-icon>mdi-home-export-outline</v-icon>
-              </template>
-              <v-list-item-title style="font-size: 0.9rem !important">Public Home</v-list-item-title>
-            </v-list-item> -->
-
-            <v-list-item to="/administration" v-if="isAdmin">
-              <template v-slot:prepend>
-                <v-icon>mdi-cogs</v-icon>
-              </template>
-              <v-list-item-title style="font-size: 0.9rem !important">Administration</v-list-item-title>
-            </v-list-item>
             <v-divider />
             <v-list-item @click="logoutClick">
               <template v-slot:prepend>
