@@ -84,6 +84,8 @@
         <ul>
           <li>Use <b>``QUESTION_URL``</b> for link to Opinionator page</li>
           <li>Use <b>``RATING_URL``</b> for link to Rater page</li>
+          <li>Use <b>``INSPIRE_URL``</b> for link to Inspire page</li>
+          <li>Use <b>``RESULTS_URL``</b> for link to Results page</li>
         </ul>
 
         <v-label></v-label>

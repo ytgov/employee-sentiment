@@ -19,6 +19,14 @@ const routes = [
         path: "rating/complete",
         component: () => import("../views/RatingComplete.vue"),
       },
+      {
+        path: "inspire/:surveyId",
+        component: () => import("../views/Inspire.vue"),
+      },
+      {
+        path: "results/:surveyId",
+        component: () => import("../views/Results.vue"),
+      },
     ],
   },
 ];

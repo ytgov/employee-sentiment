@@ -25,6 +25,29 @@ export class AnswerService implements GenericService<Answer> {
     return db(DB_ANSWER_TABLE).withSchema(DB_SCHEMA).where({ ID }).delete();
   }
 
+  async getAllForQuestion(QUESTION_ID: number): Promise<any[]> {
+    let answers = await db
+      .withSchema(DB_SCHEMA)
+      .from(DB_ANSWER_TABLE)
+      .where({ QUESTION_ID, DONE_MODERATING: 1, DELETED_FLAG: 0 });
+
+    let payload = new Array<any>();
+
+    for (let a of answers) {
+      let totalRatings = a.STAR0 + a.STAR1 + a.STAR2 + a.STAR3 + a.STAR4 + a.STAR5;
+      let rating = 0;
+
+      if (totalRatings > 0) {
+        let totalPoints = a.STAR1 * 1 + a.STAR2 * 2 + a.STAR3 * 3 + a.STAR4 * 4 + a.STAR5 * 5;
+        rating = Math.round((100 * totalPoints) / totalRatings) / 100;
+      }
+
+      payload.push({ ID: a.ID, HEADING: a.MODERATED_HEADER, ANSWER_TEXT: a.MODERATED_TEXT, rating });
+    }
+
+    return payload;
+  }
+
   async getSampleForQuestion(QUESTION_ID: number, ratingsPerTranche: number): Promise<any[]> {
     let answers = await db
       .withSchema(DB_SCHEMA)

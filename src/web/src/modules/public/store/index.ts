@@ -20,6 +20,7 @@ export const usePublicStore = defineStore("public", {
     question: undefined as Question | undefined,
     answer: "",
     responses: [] as any[],
+    results: [] as any[],
   }),
   getters: {
     allValid(state) {
@@ -39,6 +40,33 @@ export const usePublicStore = defineStore("public", {
           this.isLoading = false;
         });
     },
+    loadSurveyResults(questionId: string) {
+      this.isLoading = true;
+
+      api
+        .call("get", `${QUESTION_URL}/${questionId}/results`)
+        .then((resp) => {
+          this.results = resp.data.answers;
+          this.question = resp.data.question;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
+    loadSurveyInspire(token: string) {
+      this.isLoading = true;
+
+      api
+        .call("get", `${QUESTION_URL}/${token}/inspire`)
+        .then((resp) => {
+          this.results = resp.data.answers;
+          this.question = resp.data.question;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
+
     async loadResponses(token: string) {
       console.log("Loading Responses", token);
       this.isLoading = true;

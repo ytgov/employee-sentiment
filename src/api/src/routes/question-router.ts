@@ -6,6 +6,7 @@ import { DB_CONFIG } from "../config";
 import { AnswerService, EmailService, ParticipantService, QuestionService } from "../services";
 import { checkJwt, loadUser } from "../middleware/authz.middleware";
 import { Answer } from "src/data/models";
+import { reverse, sortBy } from "lodash";
 
 export const questionRouter = express.Router();
 
@@ -133,6 +134,49 @@ questionRouter.get(
 
     let payload = await returnQuestion(token, false);
     if (payload) return res.json(payload);
+
+    res.status(404).send();
+  }
+);
+
+questionRouter.get(
+  "/:questionId/results",
+  [param("questionId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { questionId } = req.params;
+    let question = await questionService.getById(parseInt(questionId));
+
+    if (question) {
+      // should also check for applicable state
+      let answers = await answerService.getAllForQuestion(question.ID);
+      return res.json({ data: { question, answers: reverse(sortBy(answers, "rating")) } });
+    }
+
+    res.status(404).send();
+  }
+);
+
+questionRouter.get(
+  "/:token/inspire",
+  [param("token").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { token } = req.params;
+
+    let participant = await new ParticipantService().getByToken(token);
+
+    if (participant) {
+      let question = await questionService.getById(participant.QUESTION_ID);
+
+      if (question) {
+        // should also check for applicable state
+        (question as any).answers_remaining = question.MAX_ANSWERS - participant.ANSWERS_SUBMITTED;
+        let answers = await answerService.getAllForQuestion(question.ID);
+
+        return res.json({ data: { question, answers } });
+      }
+    }
 
     res.status(404).send();
   }
