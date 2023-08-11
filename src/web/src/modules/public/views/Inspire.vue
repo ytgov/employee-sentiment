@@ -1,7 +1,7 @@
 <template>
   <h1 class="mt-0">Here are the responses that we heard</h1>
   <p class="mb-4" style="font-size: 1.2rem; font-weight: 300">
-    Below are a random list of responses that we heard from other participants.
+    Below are a random list of responses that we heard from participants.
   </p>
 
   <v-divider class="my-4" />

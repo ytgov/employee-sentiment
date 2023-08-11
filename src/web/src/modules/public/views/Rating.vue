@@ -1,7 +1,7 @@
 <template>
   <h1 class="mt-0">We want to know what you think of the following responses</h1>
   <p class="mb-4" style="font-size: 1.2rem; font-weight: 300">
-    Below are a random list of responses that we heard from other participants. Please indicate your rating on each item
+    Below are a random list of responses that we heard from participants. Please indicate your rating on each item
     then click submit. If you would like to rate additional answers, that's great too.
   </p>
 
