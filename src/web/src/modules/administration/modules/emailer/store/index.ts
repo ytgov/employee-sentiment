@@ -118,6 +118,7 @@ export const useEmailerStore = defineStore("emailer", {
     },
     unselect() {
       this.question = undefined;
+      this.email = { subject: "", body: "", recipients: [] };
     },
   },
 });
