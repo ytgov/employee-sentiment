@@ -10,6 +10,17 @@ export interface Question {
   MAX_ANSWERS: number;
   RATINGS_PER_TRANCHE: number;
   CURRENT_RATING_TRANCHE: number;
+
+  moderators?: string[];
+}
+
+export enum QuestionState {
+  Draft = 0,
+  Opinionate = 1,
+  Inspire = 2,
+  Rate = 3,
+  Closed = 4,
+  Publish = 5,
 }
 
 export interface QuestionResponse {

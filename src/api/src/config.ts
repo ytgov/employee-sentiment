@@ -65,6 +65,7 @@ export const DB_QUESTION_TABLE = process.env.DB_QUESTION_TABLE || "";
 export const DB_PARTICIPANT_TABLE = process.env.DB_PARTICIPANT_TABLE || "";
 export const DB_ANSWER_TABLE = process.env.DB_ANSWER_TABLE || "";
 export const DB_RATING_TABLE = process.env.DB_RATING_TABLE || "";
+export const DB_USER_QUESTION_TABLE = process.env.DB_USER_QUESTION_TABLE || "";
 
 export const AD_CLIENT_ID = process.env.AD_CLIENT_ID || "";
 export const AD_CLIENT_SECRET = process.env.AD_CLIENT_SECRET || "";

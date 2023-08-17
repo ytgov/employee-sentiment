@@ -1,11 +1,21 @@
-import { DB_SCHEMA, DB_QUESTION_TABLE, DB_ANSWER_TABLE } from "../config";
+import { DB_SCHEMA, DB_QUESTION_TABLE, DB_ANSWER_TABLE, DB_USER_QUESTION_TABLE } from "../config";
 import { db } from "../data";
 import { Question } from "../data/models";
 import { GenericService } from "./generic-service";
 
 export class QuestionService implements GenericService<Question> {
   async getAll(): Promise<Question[]> {
-    return db<Question>(DB_QUESTION_TABLE).withSchema(DB_SCHEMA);
+    let questions = await db<Question>(DB_QUESTION_TABLE).withSchema(DB_SCHEMA).orderBy("TITLE");
+
+    for (let q of questions) {
+      let moderators = await db(DB_USER_QUESTION_TABLE)
+        .withSchema(DB_SCHEMA)
+        .where({ QUESTION_ID: q.ID })
+        .select("EMAIL");
+      q.moderators = moderators.map((m) => m.EMAIL);
+    }
+
+    return questions;
   }
 
   async getById(ID: number): Promise<Question | undefined> {
@@ -27,5 +37,15 @@ export class QuestionService implements GenericService<Question> {
 
   async createAnswer(answer: any): Promise<any> {
     return db(DB_ANSWER_TABLE).withSchema(DB_SCHEMA).insert(answer);
+  }
+
+  async setModerators(QUESTION_ID: number, emails: string[]): Promise<any> {
+    await db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).where({ QUESTION_ID }).delete();
+
+    let inserts = emails.map((e) => {
+      return { EMAIL: e, ROLE: "Moderator", QUESTION_ID };
+    });
+
+    if (inserts.length > 0) return db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).insert(inserts);
   }
 }

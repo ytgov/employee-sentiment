@@ -22,7 +22,7 @@ questionRouter.get("/", async (req: Request, res: Response) => {
 });
 
 questionRouter.post("/", async (req: Request, res: Response) => {
-  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE } = req.body;
+  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE, moderators } = req.body;
 
   let question = await questionService.create({
     CURRENT_RATING_TRANCHE,
@@ -33,6 +33,8 @@ questionRouter.post("/", async (req: Request, res: Response) => {
     STATE,
     TITLE,
   });
+
+  await questionService.setModerators(question.ID, moderators);
 
   res.json({ data: question });
 });
@@ -87,7 +89,7 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
 
 questionRouter.put("/:id", async (req: Request, res: Response) => {
   let { id } = req.params;
-  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE } = req.body;
+  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE, moderators } = req.body;
 
   let question = await questionService.update(parseInt(id), {
     CURRENT_RATING_TRANCHE,
@@ -98,6 +100,8 @@ questionRouter.put("/:id", async (req: Request, res: Response) => {
     STATE,
     TITLE,
   });
+
+  await questionService.setModerators(parseInt(id), moderators);
 
   res.json({ data: question });
 });

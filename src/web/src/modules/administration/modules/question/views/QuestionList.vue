@@ -32,6 +32,7 @@
     </template>
 
     <v-data-table :search="search" :headers="headers" :items="items" :loading="isLoading" @click:row="rowClick">
+      <template v-slot:item.state="{ item }">{{ showState(item.raw.STATE) }}</template>
     </v-data-table>
   </base-card>
 
@@ -49,8 +50,9 @@ export default {
     headers: [
       { title: "Title", key: "TITLE" },
       { title: "Owner", key: "OWNER" },
-      { title: "State", key: "STATE" },
+      { title: "State", key: "state" },
       { title: "Current Tranche", key: "CURRENT_RATING_TRANCHE" },
+      { title: "Moderators", key: "moderators.length" },
     ],
     search: "",
   }),
@@ -78,7 +80,7 @@ export default {
     this.loadItems();
   },
   methods: {
-    ...mapActions(useQuestionStore, ["loadQuestions", "select"]),
+    ...mapActions(useQuestionStore, ["loadQuestions", "select", "stateTitle"]),
 
     async loadItems() {
       await this.loadQuestions();
@@ -97,6 +99,9 @@ export default {
         STATE: 0,
         RATINGS_PER_TRANCHE: 10,
       });
+    },
+    showState(state: number): string {
+      return this.stateTitle(state);
     },
   },
 };

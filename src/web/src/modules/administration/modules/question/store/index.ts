@@ -12,6 +12,14 @@ export const useQuestionStore = defineStore("question", {
     questions: new Array<Question>(),
     question: undefined,
     isLoading: false,
+    stateOptions: [
+      { value: 0, title: "Draft" },
+      { value: 1, title: "Opinionate" },
+      { value: 2, title: "Inspire" },
+      { value: 3, title: "Rate" },
+      { value: 4, title: "Closed" },
+      { value: 5, title: "Publish" },
+    ],
   }),
   getters: {
     questionCount(state) {
@@ -69,6 +77,9 @@ export const useQuestionStore = defineStore("question", {
     unselect() {
       this.question = undefined;
     },
+    stateTitle(state: number) {
+      return this.stateOptions[state].title;
+    },
   },
 });
 
@@ -76,6 +87,7 @@ export interface QuestionStore {
   questions: Question[];
   question: Question | undefined;
   isLoading: boolean;
+  stateOptions: { value: number; title: string }[];
 }
 
 export interface Question {
@@ -88,4 +100,5 @@ export interface Question {
   MAX_ANSWERS: number;
   RATINGS_PER_TRANCHE: number;
   CURRENT_RATING_TRANCHE: number;
+  moderators?: string[];
 }

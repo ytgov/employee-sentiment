@@ -23,14 +23,16 @@
           item-value="email" />
         <v-row>
           <v-col cols="6">
-            <v-text-field
+            <v-select
               type="number"
               label="State"
               v-model="question.STATE"
+              :items="stateOptions"
               variant="outlined"
               hide-details
-              density="comfortable"></v-text-field
-          ></v-col>
+              density="comfortable"></v-select
+          >
+        </v-col>
           <v-col cols="6">
             <v-text-field
               type="number"
@@ -39,7 +41,8 @@
               variant="outlined"
               hide-details
               density="comfortable"></v-text-field
-          ></v-col>
+          >
+        </v-col>
           <v-col cols="6">
             <v-text-field
               type="number"
@@ -48,7 +51,8 @@
               variant="outlined"
               hide-details
               density="comfortable"></v-text-field
-          ></v-col>
+          >
+        </v-col>
           <v-col cols="6">
             <v-text-field
               type="number"
@@ -56,13 +60,16 @@
               v-model="question.CURRENT_RATING_TRANCHE"
               variant="outlined"
               density="comfortable"></v-text-field
-          ></v-col>
+          >
+        </v-col>
         </v-row>
 
         <v-autocomplete
           :items="moderators"
+          v-model="question.moderators"
           multiple
           item-title="display_name"
+          item-value="EMAIL"
           label="Moderators"
           variant="outlined"
           density="comfortable"></v-autocomplete>
@@ -85,7 +92,7 @@ export default {
   name: "UserEditor",
   data: () => ({}),
   computed: {
-    ...mapState(useQuestionStore, ["question"]),
+    ...mapState(useQuestionStore, ["question", "stateOptions"]),
     ...mapState(useUserAdminStore, ["moderators", "users"]),
     visible() {
       return this.question ? true : false;
