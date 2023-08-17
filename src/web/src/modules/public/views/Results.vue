@@ -1,5 +1,5 @@
 <template>
-  <h1 class="mt-0">We want to know what you think of the following responses</h1>
+  <h1 class="mt-0">Thank you to everybody who participated on this question!</h1>
   <p class="mb-4" style="font-size: 1.2rem; font-weight: 300">
     Below are all responses and their ratings.
   </p>
