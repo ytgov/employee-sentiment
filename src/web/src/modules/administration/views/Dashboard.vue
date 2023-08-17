@@ -103,7 +103,6 @@ import { mapActions, mapState } from "pinia";
 import { useUserAdminStore } from "../modules/users/store";
 import { useUserStore } from "@/store/UserStore";
 import { useResponseStore } from "../modules/response/store";
-import { useParticipantsStore } from "../modules/participants/store";
 import ModeratorCard from "../components/ModeratorCard.vue";
 
 export default {
@@ -125,7 +124,6 @@ export default {
   methods: {
     ...mapActions(useQuestionStore, ["loadQuestions", "stateTitle"]),
     ...mapActions(useUserAdminStore, ["getAllUsers"]),
-    ...mapActions(useParticipantsStore, ["ratersForQuestion", "opinionatorsForQuestion", "getParticipantStats"]),
     ...mapActions(useResponseStore, [
       "loadResponses",
       "moderatedCountForQuestion",

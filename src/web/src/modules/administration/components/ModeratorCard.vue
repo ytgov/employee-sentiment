@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     ...mapActions(useQuestionStore, ["stateTitle"]),
-    ...mapActions(useParticipantsStore, ["ratersForQuestion", "opinionatorsForQuestion", "getParticipantStats"]),
+    ...mapActions(useParticipantsStore, ["getParticipantStats"]),
     ...mapActions(useResponseStore, [
       "moderatedCountForQuestion",
       "unmoderatedCountForQuestion",
