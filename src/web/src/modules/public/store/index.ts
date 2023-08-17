@@ -28,13 +28,23 @@ export const usePublicStore = defineStore("public", {
     },
   },
   actions: {
-    async loadSurvey(token: string) {
+    async loadSurvey(
+      token: string,
+      requiredState?: number,
+      requireResponder: boolean = false,
+      requireRater: boolean = false
+    ) {
       this.isLoading = true;
 
       api
         .call("get", `${QUESTION_URL}/${token}`)
         .then((resp) => {
-          this.question = resp.data;
+          if (requiredState && requiredState == resp.data.STATE) {
+            if (requireResponder && !resp.data.p_is_responder) return;
+            if (requireRater && !resp.data.p_is_rater) return;
+
+            this.question = resp.data;
+          }
         })
         .finally(() => {
           this.isLoading = false;

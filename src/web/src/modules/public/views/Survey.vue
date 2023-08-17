@@ -89,7 +89,7 @@ export default {
   }),
   async mounted() {
     let token = this.$route.params.surveyId;
-    await this.loadSurvey(token);
+    await this.loadSurvey(token, 1, true, false);
   },
 
   computed: {

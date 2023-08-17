@@ -90,11 +90,11 @@ export const useParticipantsStore = defineStore("participants", {
       }
     },
     select(item: Response) {
-      console.log("selected", item);
       this.batch = item;
     },
     unselect() {
-      this.batch = undefined;
+      this.batch = { participants: "", participant_type: "Opinionator", question: undefined, addresses: [] };
+      this.participants = new Array<any>();
     },
 
     async getParticipants(questionId: number) {
@@ -114,6 +114,21 @@ export const useParticipantsStore = defineStore("participants", {
           m.notify({ variant: "success", text: "Participant removed" });
         })
         .catch();
+    },
+
+    async getParticipantStats(questionId: number | undefined) {
+      if (questionId)
+        return api
+          .secureCall("get", `${PARTICIPANT_URL}/${questionId}`)
+          .then(async (resp) => {
+            return {
+              raters: resp.data.filter((r: any) => r.IS_RATER == 1).length,
+              opinionators: resp.data.filter((r: any) => r.IS_RESPONDER == 1).length,
+            };
+          })
+          .catch();
+
+      return { raters: 0, opinionators: 0 };
     },
   },
 });

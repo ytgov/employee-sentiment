@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { useApiStore } from "@/store/ApiStore";
 import { QUESTION_URL } from "@/urls";
+import { useUserStore } from "@/store/UserStore";
 
 let m = useNotificationStore();
 let api = useApiStore();
@@ -31,6 +32,11 @@ export const useQuestionStore = defineStore("question", {
     },
     moderateCount(state) {
       return 2;
+    },
+    myQuestions(state) {
+      let u = useUserStore();
+      let myQ = state.questions.filter((q) => q.moderators && q.moderators.indexOf(u.user.EMAIL) >= 0);
+      return myQ;
     },
   },
   actions: {

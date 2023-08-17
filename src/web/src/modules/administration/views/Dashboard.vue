@@ -16,9 +16,9 @@
 
   <h1>Employee Sentiment Dashboard</h1>
 
-  <v-row>
-    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y' || user.ROLE == 'Moderator'">
-      <v-card elevation="3" color="#7A9A0166" to="/administration/participants">
+  <v-row class="mb-6">
+    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+      <v-card elevation="3" color="#F2760C66" to="/administration/participants">
         <v-card-text style="text-align: right">
           <v-icon
             class="float-left"
@@ -31,36 +31,23 @@
       </v-card>
     </v-col>
 
-    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y' || user.ROLE == 'Moderator'">
-      <v-card elevation="3" color="#0097a966">
+    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+      <v-card elevation="3" color="#F2760C66" to="/administration/moderation">
         <v-card-text style="text-align: right" color="white">
           <v-icon
             class="float-left"
             style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
             >mdi-lightbulb-outline</v-icon
           >
-          <div style="font-size: 52px; line-height: 52px">{{ responseCount }}</div>
-          <div>Total Responses</div>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y' || user.ROLE == 'Moderator'">
-      <v-card elevation="3" color="#F2A90066" to="/administration/moderation">
-        <v-card-text style="text-align: right">
-          <v-icon
-            class="float-left"
-            style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
-            >mdi-lightbulb-alert</v-icon
-          >
-          <div style="font-size: 52px; line-height: 52px">{{ moderateCount }}</div>
-          <div>Awaiting Moderation</div>
+          <div style="font-size: 52px; line-height: 52px">&nbsp;</div>
+          <div>All Responses (Admin only)</div>
         </v-card-text>
       </v-card>
     </v-col>
 
     <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
       <v-card elevation="3" color="#F2760C66" to="/administration/questions">
-        <v-card-text style="text-align: right;">
+        <v-card-text style="text-align: right">
           <v-icon
             class="float-left"
             style="font-size: 90px; opacity: 25%; position: absolute; left: 10px; margin-top: -12px"
@@ -99,6 +86,15 @@
       </v-card>
     </v-col>
   </v-row>
+
+  <div v-if="myQuestions.length > 0">
+    <h2 class="mb-3">My Questions</h2>
+    <v-row>
+      <v-col cols="12" md="6" v-for="question of myQuestions">
+        <moderator-card :question="question"></moderator-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script lang="ts">
@@ -106,26 +102,36 @@ import { useQuestionStore } from "@/modules/administration/modules/question/stor
 import { mapActions, mapState } from "pinia";
 import { useUserAdminStore } from "../modules/users/store";
 import { useUserStore } from "@/store/UserStore";
+import { useResponseStore } from "../modules/response/store";
+import { useParticipantsStore } from "../modules/participants/store";
+import ModeratorCard from "../components/ModeratorCard.vue";
 
 export default {
   name: "Dashboard",
+  components: { ModeratorCard },
   data: () => ({
     breadcrumbs: [{ title: "Home", disabled: false }],
   }),
   computed: {
-    ...mapState(useQuestionStore, ["questionCount", "responseCount", "moderateCount"]),
+    ...mapState(useQuestionStore, ["questionCount", "responseCount", "moderateCount", "myQuestions"]),
     ...mapState(useUserAdminStore, ["userCount"]),
     ...mapState(useUserStore, ["user"]),
   },
   async mounted() {
-    await this.initialize();
     await this.getAllUsers();
     await this.loadQuestions();
+    await this.loadResponses();
   },
   methods: {
-    ...mapActions(useQuestionStore, ["initialize"]),
+    ...mapActions(useQuestionStore, ["loadQuestions", "stateTitle"]),
     ...mapActions(useUserAdminStore, ["getAllUsers"]),
-    ...mapActions(useQuestionStore, ["loadQuestions"]),
+    ...mapActions(useParticipantsStore, ["ratersForQuestion", "opinionatorsForQuestion", "getParticipantStats"]),
+    ...mapActions(useResponseStore, [
+      "loadResponses",
+      "moderatedCountForQuestion",
+      "unmoderatedCountForQuestion",
+      "ratingCountForQuestion",
+    ]),
   },
 };
 </script>

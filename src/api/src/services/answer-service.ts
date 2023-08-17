@@ -48,7 +48,7 @@ export class AnswerService implements GenericService<Answer> {
     return payload;
   }
 
-  async getSampleForQuestion(QUESTION_ID: number, ratingsPerTranche: number): Promise<any[]> {
+  async getSampleForQuestion(QUESTION_ID: number, ratingsPerTranche: number, PARTICIPANT_ID: number): Promise<any[]> {
     let answers = await db
       .withSchema(DB_SCHEMA)
       .from(DB_ANSWER_TABLE)
@@ -56,12 +56,15 @@ export class AnswerService implements GenericService<Answer> {
 
     let payload = new Array<any>();
 
-    // not yet rated by user
     // limit response count to ratingsPerTranche
     // answers with least number of ratings, random if equal
 
+    let alreadyRated = await db(DB_RATING_TABLE).withSchema(DB_SCHEMA).where({ PARTICIPANT_ID }).select("ANSWER_ID");
+    let ratedAnswers = alreadyRated.map((a) => a.ANSWER_ID);
+
     for (let a of answers) {
-      payload.push({ ID: a.ID, HEADING: a.MODERATED_HEADER, ANSWER_TEXT: a.MODERATED_TEXT, rating: 0 });
+      if (!ratedAnswers.includes(a.ID))
+        payload.push({ ID: a.ID, HEADING: a.MODERATED_HEADER, ANSWER_TEXT: a.MODERATED_TEXT, rating: 0 });
     }
 
     return payload;

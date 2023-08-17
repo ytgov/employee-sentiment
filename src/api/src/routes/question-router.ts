@@ -5,7 +5,7 @@ import * as knex from "knex";
 import { DB_CONFIG } from "../config";
 import { AnswerService, EmailService, ParticipantService, QuestionService } from "../services";
 import { checkJwt, loadUser } from "../middleware/authz.middleware";
-import { Answer } from "src/data/models";
+import { Answer, QuestionState } from "../data/models";
 import { reverse, sortBy } from "lodash";
 
 export const questionRouter = express.Router();
@@ -22,7 +22,8 @@ questionRouter.get("/", async (req: Request, res: Response) => {
 });
 
 questionRouter.post("/", async (req: Request, res: Response) => {
-  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE, moderators } = req.body;
+  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE, moderators } =
+    req.body;
 
   let question = await questionService.create({
     CURRENT_RATING_TRANCHE,
@@ -89,7 +90,8 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
 
 questionRouter.put("/:id", async (req: Request, res: Response) => {
   let { id } = req.params;
-  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE, moderators } = req.body;
+  let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE, moderators } =
+    req.body;
 
   let question = await questionService.update(parseInt(id), {
     CURRENT_RATING_TRANCHE,
@@ -143,6 +145,7 @@ questionRouter.get(
   }
 );
 
+// display the results for a question
 questionRouter.get(
   "/:questionId/results",
   [param("questionId").notEmpty()],
@@ -151,7 +154,7 @@ questionRouter.get(
     let { questionId } = req.params;
     let question = await questionService.getById(parseInt(questionId));
 
-    if (question) {
+    if (question && question.STATE == QuestionState.Publish) {
       // should also check for applicable state
       let answers = await answerService.getAllForQuestion(question.ID);
       return res.json({ data: { question, answers: reverse(sortBy(answers, "rating")) } });
@@ -161,6 +164,7 @@ questionRouter.get(
   }
 );
 
+// insire results
 questionRouter.get(
   "/:token/inspire",
   [param("token").notEmpty()],
@@ -173,7 +177,7 @@ questionRouter.get(
     if (participant) {
       let question = await questionService.getById(participant.QUESTION_ID);
 
-      if (question) {
+      if (question && question.STATE == QuestionState.Inspire) {
         // should also check for applicable state
         (question as any).answers_remaining = question.MAX_ANSWERS - participant.ANSWERS_SUBMITTED;
         let answers = await answerService.getAllForQuestion(question.ID);
@@ -193,9 +197,10 @@ questionRouter.get(
   async (req: Request, res: Response) => {
     let { token } = req.params;
     let question = await returnQuestion(token, false);
+    let participant = await participantService.getByToken(token);
 
-    if (question && question.data && question.data.ID) {
-      let answers = await answerService.getSampleForQuestion(question.data.ID, 4);
+    if (participant && question && question.data && question.data.ID) {
+      let answers = await answerService.getSampleForQuestion(question.data.ID, 4, participant.ID);
       return res.json({ data: answers });
     }
 
@@ -298,11 +303,12 @@ async function returnQuestion(token: string, justAdded: boolean) {
       delete q.OWNER;
       delete q.CREATE_DATE;
       delete q.RATINGS_PER_TRANCHE;
-      delete q.STATE;
       delete q.CURRENT_RATING_TRANCHE;
 
       q.answer_count = participant.ANSWERS_SUBMITTED;
       q.answers_remaining = question.MAX_ANSWERS - participant.ANSWERS_SUBMITTED;
+      q.p_is_rater = participant.IS_RATER == 1;
+      q.p_is_responder = participant.IS_RESPONDER == 1;
 
       return { data: q };
     }

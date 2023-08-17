@@ -11,6 +11,7 @@ export const useUserStore = defineStore("user", {
       first_name: "",
       last_name: "",
       email: "",
+      EMAIL: "",
       ynet_id: "",
       sub: "",
       STATUS: "",

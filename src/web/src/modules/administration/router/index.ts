@@ -30,6 +30,14 @@ const routes = [
         beforeEnter: requireAccess,
         meta: {
           allow_admin: true,
+        },
+      },
+      {
+        path: "/administration/moderation/:questionId",
+        component: () => import("../modules/response/views/QuestionResponseList.vue"),
+        beforeEnter: requireAccess,
+        meta: {
+          allow_admin: true,
           role: "Moderator",
         },
       },
