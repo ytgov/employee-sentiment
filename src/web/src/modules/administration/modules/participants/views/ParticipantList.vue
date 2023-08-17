@@ -140,8 +140,11 @@ export default {
     this.loadItems();
     this.loadQuestions();
   },
+  unmounted() {
+    this.unselect();
+  },
   methods: {
-    ...mapActions(useParticipantsStore, ["parse", "create", "getParticipants", "deleteParticipant"]),
+    ...mapActions(useParticipantsStore, ["parse", "create", "getParticipants", "deleteParticipant", "unselect"]),
     ...mapActions(useQuestionStore, ["loadQuestions"]),
 
     async loadItems() {

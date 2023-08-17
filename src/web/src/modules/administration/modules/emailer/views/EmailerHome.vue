@@ -162,9 +162,14 @@ export default {
   beforeMount() {
     this.loadItems();
   },
+  unmounted() {
+    this.unselectEmailer();
+    this.unselect();
+  },
   methods: {
     ...mapActions(useEmailerStore, ["loadQuestions", "select", "loadEvents", "sendTest", "sendEmail"]),
-    ...mapActions(useParticipantsStore, ["getParticipants"]),
+    ...mapActions(useEmailerStore, { unselectEmailer: "unselect" }),
+    ...mapActions(useParticipantsStore, ["getParticipants", "unselect"]),
 
     async loadItems() {
       await this.loadQuestions();
