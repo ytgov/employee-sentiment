@@ -10,6 +10,9 @@ export interface Question {
   MAX_ANSWERS: number;
   RATINGS_PER_TRANCHE: number;
   CURRENT_RATING_TRANCHE: number;
+  MODERATABLE: number;
+  QUESTION_NOUNCE: string;
+  ZERO_RATING_FLAG: number;
 
   moderators?: string[];
 }

@@ -26,7 +26,7 @@
     </v-card>
     <v-divider class="my-4" />
     <v-btn color="primary" @click="submitClick"> Submit </v-btn>
-    <v-btn color="primary" class="ml-5"> Submit and Rate More </v-btn>
+    <v-btn color="primary" class="ml-5 d-none"> Submit and Rate More </v-btn>
   </div>
   <div v-else-if="!isLoading && responses.length == 0">No answers remain to be rated</div>
   <div v-else-if="!isLoading">Question not found</div>

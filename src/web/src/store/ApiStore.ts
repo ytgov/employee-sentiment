@@ -2,6 +2,7 @@ import { defineStore, acceptHMRUpdate } from "pinia";
 import { useNotificationStore } from "@/store/NotificationStore";
 import { SecureAPICall, APICall } from "./helpers/axiosAPIConfig";
 import { AuthHelper } from "@/plugins/auth";
+import { router } from "@/routes";
 
 //refs are reactive variables
 //computed are reactive variables that are derived from other reactive variables
@@ -20,6 +21,15 @@ export const useApiStore = defineStore("api", () => {
     if (err.response) {
       status_code = err.response.status || 500;
       if (err.response.data && err.response.data.message) text = err.response.data.message;
+    }
+
+    if (status_code == 403) {
+      router.push("/NotAvailable");
+      return;
+    }
+    if (status_code == 404) {
+      router.push("/NotFound");
+      return;
     }
 
     let message = {

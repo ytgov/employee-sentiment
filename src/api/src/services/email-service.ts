@@ -19,7 +19,8 @@ export class EmailService {
     recipient: { fullName: string; email: string },
     subject: string,
     body: string,
-    token: string
+    token: string,
+    questionToken: string
   ): Promise<any> {
     body = body.replace(
       /``QUESTION_URL``/,
@@ -30,8 +31,8 @@ export class EmailService {
       `<a href="${FRONTEND_URL}/inspire/${token}">${FRONTEND_URL}/inspire/${token}</a>`
     );
     body = body.replace(
-      /``RESUTLS_URL``/,
-      `<a href="${FRONTEND_URL}/results/${token}">${FRONTEND_URL}/results/${token}</a>`
+      /``RESULTS_URL``/,
+      `<a href="${FRONTEND_URL}/results/${questionToken}">${FRONTEND_URL}/results/${questionToken}</a>`
     );
 
     await this.sendEmail(recipient.fullName, recipient.email, subject, body);
@@ -41,7 +42,8 @@ export class EmailService {
     recipient: { fullName: string; email: string },
     subject: string,
     body: string,
-    token: string
+    token: string,
+    questionToken: string
   ): Promise<any> {
     body = body.replace(
       /``RATING_URL``/,
@@ -52,8 +54,8 @@ export class EmailService {
       `<a href="${FRONTEND_URL}/inspire/${token}">${FRONTEND_URL}/inspire/${token}</a>`
     );
     body = body.replace(
-      /``RESUTLS_URL``/,
-      `<a href="${FRONTEND_URL}/results/${token}">${FRONTEND_URL}/results/${token}</a>`
+      /``RESULTS_URL``/,
+      `<a href="${FRONTEND_URL}/results/${questionToken}">${FRONTEND_URL}/results/${questionToken}</a>`
     );
 
     await this.sendEmail(recipient.fullName, recipient.email, subject, body);

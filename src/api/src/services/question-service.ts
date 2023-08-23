@@ -23,6 +23,11 @@ export class QuestionService implements GenericService<Question> {
     return question;
   }
 
+  async getByToken(QUESTION_NOUNCE: string): Promise<Question | undefined> {
+    let question = await db<Question>(DB_QUESTION_TABLE).withSchema(DB_SCHEMA).where({ QUESTION_NOUNCE }).first();
+    return question;
+  }
+
   async create(item: any): Promise<any> {
     return db(DB_QUESTION_TABLE).withSchema(DB_SCHEMA).insert(item).returning("*");
   }

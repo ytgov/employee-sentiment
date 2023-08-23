@@ -43,6 +43,7 @@ import { mapActions, mapState } from "pinia";
 import { useQuestionStore } from "../store";
 import QuestionEditor from "../components/QuestionEditor.vue";
 import { clone } from "lodash";
+import { useUserStore } from "@/store/UserStore";
 
 export default {
   components: { QuestionEditor },
@@ -58,6 +59,7 @@ export default {
   }),
   computed: {
     ...mapState(useQuestionStore, ["questions", "isLoading"]),
+    ...mapState(useUserStore, ["user"]),
     items() {
       return this.questions;
     },
@@ -95,9 +97,11 @@ export default {
         CURRENT_RATING_TRANCHE: 0,
         DISPLAY_TEXT: "",
         MAX_ANSWERS: 4,
-        OWNER: "",
+        OWNER: this.user.EMAIL,
         STATE: 0,
         RATINGS_PER_TRANCHE: 10,
+        ZERO_RATING_FLAG: 1,
+        MODERATABLE: 0,
       });
     },
     showState(state: number): string {

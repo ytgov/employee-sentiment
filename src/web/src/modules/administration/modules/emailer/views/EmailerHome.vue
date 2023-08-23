@@ -119,6 +119,7 @@ import { useEmailerStore, Event } from "../store";
 
 import moment from "moment";
 import { useParticipantsStore } from "../../participants/store";
+import { QuestionState } from "../../question/store";
 
 export default {
   data: () => ({
@@ -137,10 +138,17 @@ export default {
     ...mapState(useParticipantsStore, ["opinionators", "raters"]),
 
     items() {
-      return this.questions;
-    },
-    totalItems() {
-      return this.questions.length;
+      let validStatesForEmail = [
+        QuestionState.Inspire,
+        QuestionState.Opinionate,
+        QuestionState.Publish,
+        QuestionState.Rate,
+      ];
+
+      if (this.questions) {
+        return this.questions.filter((q) => validStatesForEmail.includes(q.STATE));
+      }
+      return [];
     },
     breadcrumbs() {
       return [

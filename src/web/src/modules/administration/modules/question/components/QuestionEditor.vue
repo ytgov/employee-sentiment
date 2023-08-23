@@ -30,19 +30,17 @@
               :items="stateOptions"
               variant="outlined"
               hide-details
-              density="comfortable"></v-select
-          >
-        </v-col>
+              density="comfortable"></v-select>
+          </v-col>
           <v-col cols="6">
             <v-text-field
               type="number"
-              label="Max answer"
+              label="Max answers"
               v-model="question.MAX_ANSWERS"
               variant="outlined"
               hide-details
-              density="comfortable"></v-text-field
-          >
-        </v-col>
+              density="comfortable"></v-text-field>
+          </v-col>
           <v-col cols="6">
             <v-text-field
               type="number"
@@ -50,18 +48,42 @@
               v-model="question.RATINGS_PER_TRANCHE"
               variant="outlined"
               hide-details
-              density="comfortable"></v-text-field
-          >
-        </v-col>
+              density="comfortable"></v-text-field>
+          </v-col>
           <v-col cols="6">
             <v-text-field
               type="number"
               label="Current rating tranche"
               v-model="question.CURRENT_RATING_TRANCHE"
               variant="outlined"
-              density="comfortable"></v-text-field
-          >
-        </v-col>
+              hide-details
+              density="comfortable"></v-text-field>
+          </v-col>
+
+          <v-col cols="6">
+            <v-select
+              type="number"
+              label="Include zero ratings"
+              :items="[
+                { title: 'Yes', value: 1 },
+                { title: 'No', value: 0 },
+              ]"
+              v-model="question.ZERO_RATING_FLAG"
+              variant="outlined"
+              density="comfortable" />
+          </v-col>
+          <v-col cols="6">
+            <v-select
+              type="number"
+              label="Moderatable"
+              :items="[
+                { title: 'Yes', value: 1 },
+                { title: 'No', value: 0 },
+              ]"
+              v-model="question.MODERATABLE"
+              variant="outlined"
+              density="comfortable" />
+          </v-col>
         </v-row>
 
         <v-autocomplete
