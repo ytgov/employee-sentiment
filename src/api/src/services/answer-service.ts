@@ -25,7 +25,7 @@ export class AnswerService implements GenericService<Answer> {
     return db(DB_ANSWER_TABLE).withSchema(DB_SCHEMA).where({ ID }).delete();
   }
 
-  async getAllForQuestion(QUESTION_ID: number): Promise<any[]> {
+  async getAllForQuestion(QUESTION_ID: number, includeZero: boolean): Promise<any[]> {
     let answers = await db
       .withSchema(DB_SCHEMA)
       .from(DB_ANSWER_TABLE)
@@ -34,7 +34,7 @@ export class AnswerService implements GenericService<Answer> {
     let payload = new Array<any>();
 
     for (let a of answers) {
-      let totalRatings = a.STAR0 + a.STAR1 + a.STAR2 + a.STAR3 + a.STAR4 + a.STAR5;
+      let totalRatings = (includeZero ? a.STAR0 : 0) + a.STAR1 + a.STAR2 + a.STAR3 + a.STAR4 + a.STAR5;
       let rating = 0;
 
       if (totalRatings > 0) {

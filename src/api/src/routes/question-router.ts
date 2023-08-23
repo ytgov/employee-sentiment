@@ -1,8 +1,6 @@
 import express, { Request, Response } from "express";
 import { ReturnValidationErrors } from "../middleware";
 import { param } from "express-validator";
-import * as knex from "knex";
-import { DB_CONFIG } from "../config";
 import { AnswerService, EmailService, ParticipantService, QuestionService } from "../services";
 import { checkJwt, loadUser } from "../middleware/authz.middleware";
 import { Answer, QuestionState } from "../data/models";
@@ -205,7 +203,7 @@ questionRouter.get(
     if (question) {
       if (question.STATE != QuestionState.Publish) return res.status(403).send();
       // should also check for applicable state
-      let answers = await answerService.getAllForQuestion(question.ID);
+      let answers = await answerService.getAllForQuestion(question.ID, question.ZERO_RATING_FLAG == 1);
       return res.json({ data: { question, answers: reverse(sortBy(answers, "rating")) } });
     }
 
@@ -231,7 +229,7 @@ questionRouter.get(
 
         // should also check for applicable state
         (question as any).answers_remaining = question.MAX_ANSWERS - participant.ANSWERS_SUBMITTED;
-        let answers = await answerService.getAllForQuestion(question.ID);
+        let answers = await answerService.getAllForQuestion(question.ID, question.ZERO_RATING_FLAG == 1);
 
         return res.json({ data: { question, answers } });
       }
@@ -279,24 +277,6 @@ questionRouter.post(
   }
 );
 
-questionRouter.get(
-  "/:token/preview",
-  [param("token").notEmpty()],
-  ReturnValidationErrors,
-  async (req: Request, res: Response) => {
-    const db = knex.knex(DB_CONFIG);
-    let { token } = req.params;
-
-    let survey = await db("SRVT.SURVEY").where({ SID: token }).first();
-
-    if (survey) {
-      let questions = await db("SRVT.QUESTION").where({ SID: token }).orderBy("ORD");
-      return res.json({ data: { survey, questions } });
-    }
-    res.status(404).send();
-  }
-);
-
 questionRouter.post(
   "/:token",
   [param("token").notEmpty()],
@@ -323,19 +303,6 @@ questionRouter.post(
       if (payload) return res.json(payload);
     }
     res.status(404).send("Not found");
-  }
-);
-
-// This route is only temporary to test for submissions
-questionRouter.get(
-  "/:token/answers",
-  [param("token").notEmpty()],
-  ReturnValidationErrors,
-  async (req: Request, res: Response) => {
-    const db = knex.knex(DB_CONFIG);
-    let { token } = req.params;
-    let answers = await db("SRVT.RESPONSE_LINE").where({ TOKEN: token });
-    return res.json({ data: answers });
   }
 );
 
