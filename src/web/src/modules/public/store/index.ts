@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 import { useNotificationStore } from "@/store/NotificationStore";
 import { useApiStore } from "@/store/ApiStore";
-import { PROFILE_URL, QUESTION_URL, USERS_URL } from "@/urls";
+import { QUESTION_URL } from "@/urls";
 
 let m = useNotificationStore();
 let api = useApiStore();
@@ -30,7 +30,7 @@ export const usePublicStore = defineStore("public", {
   actions: {
     async loadSurvey(
       token: string,
-      requiredState?: number,
+      requiredState?: number[],
       requireResponder: boolean = false,
       requireRater: boolean = false
     ) {
@@ -39,7 +39,7 @@ export const usePublicStore = defineStore("public", {
       api
         .call("get", `${QUESTION_URL}/${token}`)
         .then((resp) => {
-          if (requiredState && requiredState == resp.data.STATE) {
+          if (requiredState && requiredState.includes(resp.data.STATE)) {
             if (requireResponder && !resp.data.p_is_responder) return;
             if (requireRater && !resp.data.p_is_rater) return;
 

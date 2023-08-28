@@ -181,9 +181,10 @@ questionRouter.get(
     let { token } = req.params;
 
     let payload = await returnQuestion(token, false);
+    let validStates = [QuestionState.Opinionate, QuestionState.Inspire];
 
     if (payload) {
-      if (payload.data.STATE != QuestionState.Opinionate) return res.status(403).send();
+      if (!validStates.includes(payload.data.STATE)) return res.status(403).send();
       return res.json(payload);
     }
 

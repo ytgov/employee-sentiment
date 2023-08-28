@@ -35,6 +35,7 @@
 <script>
 import { mapActions, mapState } from "pinia";
 import { usePublicStore } from "../store";
+import { QuestionState } from "@/modules/administration/modules/question/store";
 
 export default {
   data: () => ({
@@ -42,7 +43,7 @@ export default {
   }),
   async mounted() {
     let token = this.$route.params.surveyId;
-    await this.loadSurvey(token, 3, false, true);
+    await this.loadSurvey(token, [QuestionState.Rate], false, true);
     await this.loadResponses(token);
   },
 
