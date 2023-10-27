@@ -7,37 +7,23 @@
     rounded></v-progress-linear>
 
   <div v-if="question">
-    <h1>{{ question.TITLE }}</h1>
-    <p class="mb-4" style="font-size: 1.2rem; font-weight: 300">
-      <!--  {{ question.DESCRIPTION }} -->
-    </p>
-    <!-- 
-  <v-divider class="my-4" /> -->
+    <h1 class="mb-0">{{ question.TITLE }}</h1>
+    <v-divider class="my-3" />
+    <h2 class="text-h5 mb-3"><strong>Question:</strong> {{ question.DISPLAY_TEXT }}</h2>
 
-    <div v-if="!moveOn">
-      <v-card elevation="0">
-        <v-card-text>
-          <!-- <div v-html="question.PAGE_INTRO"></div>
- -->
-          <v-btn @click="moveOn = true" size="large" class="mt-8" color="primary"
-            >Continue to Survey</v-btn
-          ></v-card-text
-        >
-      </v-card>
-    </div>
-
-    <div v-if="moveOn && question">
+    <div>
       <v-label v-if="question.answers_remaining > 0" class="mb-2"
-        >You can submit up to
-        {{ question.answers_remaining }} response{{ question.answers_remaining > 1 ? 's' : '' }}</v-label
+        >You can submit up to {{ question.answers_remaining }} response{{
+          question.answers_remaining > 1 ? "s" : ""
+        }}</v-label
       >
       <div class="row">
         <div class="col-sm-12 col-md-9 col-lg-7" v-for="i in question.answers_remaining">
           <v-card class="mb-5 question" elevation="0">
-            <v-card-title class="pb-0" style="min-height: 48px">
+            <v-card-title class="pb-0" style="min-height: 35px">
               <v-row>
-                <v-col cols="11" class="pb-1" style="line-height: 24px"
-                  >{{ i }}) Question: {{ question.DISPLAY_TEXT }}
+                <v-col cols="11" class="pb-0" style="line-height: 24px"
+                  >Response {{ i }}.
                 </v-col>
                 <v-col cols="1" class="">
                   <div class="float-right">
@@ -75,7 +61,9 @@
             v-if="question.answers_remaining > 0">
             Submit {{ answerCount }} Responses</v-btn
           ><br /> -->
-          <v-btn color="info" @click="doneClick" :disabled="answerCount == 0"> Submit  {{ answerCount }}  and finish </v-btn>
+          <v-btn color="info" @click="doneClick" :disabled="answerCount == 0">
+            Submit {{ answerCount }} and finish
+          </v-btn>
         </div>
       </div>
     </div>
@@ -89,9 +77,7 @@ import { usePublicStore } from "../store";
 import { QuestionState } from "@/modules/administration/modules/question/store";
 
 export default {
-  data: () => ({
-    moveOn: true,
-  }),
+  data: () => ({}),
   async mounted() {
     let token = this.$route.params.surveyId;
     await this.loadSurvey(token, [QuestionState.Inspire, QuestionState.Opinionate], true, false);
