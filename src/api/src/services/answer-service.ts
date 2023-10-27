@@ -1,3 +1,4 @@
+import { sample, sampleSize, shuffle } from "lodash";
 import { DB_SCHEMA, DB_ANSWER_TABLE, DB_RATING_TABLE } from "../config";
 import { db } from "../data";
 import { Answer } from "../data/models";
@@ -36,13 +37,32 @@ export class AnswerService implements GenericService<Answer> {
     for (let a of answers) {
       let totalRatings = (includeZero ? a.STAR0 : 0) + a.STAR1 + a.STAR2 + a.STAR3 + a.STAR4 + a.STAR5;
       let rating = 0;
+      let std_dev = 0;
 
       if (totalRatings > 0) {
         let totalPoints = a.STAR1 * 1 + a.STAR2 * 2 + a.STAR3 * 3 + a.STAR4 * 4 + a.STAR5 * 5;
         rating = Math.round((100 * totalPoints) / totalRatings) / 100;
+
+        let mean = totalPoints / totalRatings;
+
+        //let s0 = Math.pow(0 - mean, 2) * a.STAR0;
+        let s1 = Math.pow(1 - mean, 2) * a.STAR1;
+        let s2 = Math.pow(2 - mean, 2) * a.STAR2;
+        let s3 = Math.pow(3 - mean, 2) * a.STAR3;
+        let s4 = Math.pow(4 - mean, 2) * a.STAR4;
+        let s5 = Math.pow(5 - mean, 2) * a.STAR5;
+        let stot = s1 + s2 + s3 + s4 + s5;
+        std_dev = Math.round(Math.sqrt(stot / totalRatings) * 100) / 100;
       }
 
-      payload.push({ ID: a.ID, HEADING: a.MODERATED_HEADER, ANSWER_TEXT: a.MODERATED_TEXT, rating });
+      payload.push({
+        ID: a.ID,
+        HEADING: a.MODERATED_HEADER,
+        ANSWER_TEXT: a.MODERATED_TEXT,
+        rating,
+        std_dev,
+        totalRatings,
+      });
     }
 
     return payload;
@@ -55,16 +75,18 @@ export class AnswerService implements GenericService<Answer> {
       .where({ QUESTION_ID, DONE_MODERATING: 1, DELETED_FLAG: 0 });
 
     let payload = new Array<any>();
-
-    // limit response count to ratingsPerTranche
-    // answers with least number of ratings, random if equal
-
     let alreadyRated = await db(DB_RATING_TABLE).withSchema(DB_SCHEMA).where({ PARTICIPANT_ID }).select("ANSWER_ID");
     let ratedAnswers = alreadyRated.map((a) => a.ANSWER_ID);
 
     for (let a of answers) {
       if (!ratedAnswers.includes(a.ID))
         payload.push({ ID: a.ID, HEADING: a.MODERATED_HEADER, ANSWER_TEXT: a.MODERATED_TEXT, rating: 0 });
+    }
+
+    payload = shuffle(payload);
+
+    if (ratingsPerTranche < payload.length) {
+      payload = sampleSize(payload, ratingsPerTranche);
     }
 
     return payload;

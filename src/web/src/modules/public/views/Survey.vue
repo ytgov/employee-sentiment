@@ -26,13 +26,19 @@
       </v-card>
     </div>
 
-    <div v-if="moveOn">
+    <div v-if="moveOn && question">
+      <v-label v-if="question.answers_remaining > 0" class="mb-2"
+        >You can submit up to
+        {{ question.answers_remaining }} response{{ question.answers_remaining > 1 ? 's' : '' }}</v-label
+      >
       <div class="row">
-        <div class="col-sm-12 col-md-9 col-lg-7">
+        <div class="col-sm-12 col-md-9 col-lg-7" v-for="i in question.answers_remaining">
           <v-card class="mb-5 question" elevation="0">
             <v-card-title class="pb-0" style="min-height: 48px">
               <v-row>
-                <v-col cols="11" class="pb-1" style="line-height: 24px"> Question: {{ question.DISPLAY_TEXT }} </v-col>
+                <v-col cols="11" class="pb-1" style="line-height: 24px"
+                  >{{ i }}) Question: {{ question.DISPLAY_TEXT }}
+                </v-col>
                 <v-col cols="1" class="">
                   <div class="float-right">
                     <v-icon
@@ -40,7 +46,7 @@
                       class="float-right"
                       style="width: 40px"
                       title="Question complete"
-                      v-if="question"
+                      v-if="answers[i]"
                       >mdi-check-bold</v-icon
                     >
                   </div>
@@ -50,28 +56,26 @@
             <v-card-text style="clear: both">
               <v-textarea
                 density="comfortable"
-                v-model="answer"
+                v-model="answers[i]"
                 variant="outlined"
                 hide-details
+                rows="3"
                 bg-color="white"
                 class="mt-4"></v-textarea>
-              <v-label v-if="question.answers_remaining > 0" class="my-3"
-                >You can submit up to {{ question.answers_remaining }} more responses</v-label
-              >
-              <div class="text-right">
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="primary"
-                  class="mb-4"
-                  :disabled="!allValid"
-                  @click="submitSurvey"
-                  v-if="question.answers_remaining > 0">
-                  Submit </v-btn
-                ><br />
-                <v-btn color="info" @click="doneClick"> I'm done </v-btn>
-              </div>
             </v-card-text>
           </v-card>
+        </div>
+        <div class="text-right">
+          <v-spacer></v-spacer>
+          <!-- <v-btn
+            color="primary"
+            class="mb-4"
+            :disabled="!allValid"
+            @click="submitSurvey"
+            v-if="question.answers_remaining > 0">
+            Submit {{ answerCount }} Responses</v-btn
+          ><br /> -->
+          <v-btn color="info" @click="doneClick" :disabled="answerCount == 0"> Submit  {{ answerCount }}  and finish </v-btn>
         </div>
       </div>
     </div>
@@ -94,8 +98,8 @@ export default {
   },
 
   computed: {
-    ...mapState(usePublicStore, ["question", "allValid", "isLoading"]),
-    ...mapWritableState(usePublicStore, ["answer"]),
+    ...mapState(usePublicStore, ["question", "allValid", "isLoading", "answerCount"]),
+    ...mapWritableState(usePublicStore, ["answers"]),
   },
   methods: {
     ...mapActions(usePublicStore, ["loadSurvey", "submit"]),
@@ -108,7 +112,7 @@ export default {
       });
     },
     async doneClick() {
-      if (this.answer.length > 0 && this.question.answers_remaining > 0) {
+      if (this.answers.length > 0 && this.question.answers_remaining > 0) {
         await this.submit(this.$route.params.surveyId).then(() => {
           this.$router.push("/question/complete");
         });

@@ -18,15 +18,15 @@
     <label class="v-label mt-6 mb-2" style="font-weight: 300">We heard:</label>
 
     <v-card elevation="0" class="mb-3" v-for="(item, idx) of responses">
-      <v-card-text>
+      <v-card-text class="pb-2">
         <p>{{ item.ANSWER_TEXT }}</p>
 
-        <v-rating clearable color="primary" density="comfortable" v-model="item.rating"></v-rating>
+        <v-rating clearable color="primary" density="comfortable" v-model="item.rating" class="mt-2"></v-rating>
       </v-card-text>
     </v-card>
     <v-divider class="my-4" />
     <v-btn color="primary" @click="submitClick"> Submit </v-btn>
-    <v-btn color="primary" class="ml-5 d-none"> Submit and Rate More </v-btn>
+    <v-btn color="primary" @click="submitAndMoreClick" class="ml-5"> Submit and Rate More </v-btn>
   </div>
   <div v-else-if="!isLoading && responses.length == 0">No answers remain to be rated</div>
   <div v-else-if="!isLoading">Question not found</div>
@@ -56,6 +56,11 @@ export default {
     async submitClick() {
       await this.saveRatings(this.$route.params.surveyId).then((r) => {
         this.$router.push(`/rating/complete`);
+      });
+    },
+    async submitAndMoreClick() {
+      await this.saveRatings(this.$route.params.surveyId).then(async (r) => {
+        await this.loadResponses(this.$route.params.surveyId);
       });
     },
   },

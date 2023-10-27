@@ -3,7 +3,9 @@
 
   <p>Your answers has been saved</p>
 
-  You can come back and submit up to {{ question.answers_remaining }} more responses
+  <p v-if="question.answers_remaining > 0">
+    You can come back and submit up to {{ Math.max(0, question.answers_remaining) }} more responses
+  </p>
 </template>
 
 <script>

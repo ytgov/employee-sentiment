@@ -18,13 +18,17 @@ export const usePublicStore = defineStore("public", {
       },
     },
     question: undefined as Question | undefined,
-    answer: "",
+    answers: [""],
     responses: [] as any[],
     results: [] as any[],
   }),
   getters: {
     allValid(state) {
-      return state.answer && state.answer.length > 0;
+      return true;
+      //return state.answer && state.answer.length > 0;
+    },
+    answerCount(state) {
+      return state.answers.filter((a) => a.length > 0).length;
     },
   },
   actions: {
@@ -39,7 +43,7 @@ export const usePublicStore = defineStore("public", {
       api
         .call("get", `${QUESTION_URL}/${token}`)
         .then((resp) => {
-          if (requiredState && requiredState.includes(resp.data.STATE)) {
+          if (requiredState && requiredState.includes(resp.data?.STATE)) {
             if (requireResponder && !resp.data.p_is_responder) return;
             if (requireRater && !resp.data.p_is_rater) return;
 
@@ -93,18 +97,21 @@ export const usePublicStore = defineStore("public", {
 
     async submit(token: string) {
       this.isLoading = true;
-      api
-        .call("post", `${QUESTION_URL}/${token}`, { answer: this.answer })
-        .then((resp) => {
-          if (!resp.error) {
-            this.answer = "";
-            this.question = resp.data;
-            m.notify({ text: "Answer submitted", variant: "success" });
-          }
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
+
+      for (let answer of this.answers.filter((a) => a.trim().length > 0)) {
+        api
+          .call("post", `${QUESTION_URL}/${token}`, { answer: answer })
+          .then((resp) => {
+            if (!resp.error) {
+              this.question = resp.data;
+              this.answers = [];
+              m.notify({ text: "Answer submitted", variant: "success" });
+            }
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
+      }
     },
     async saveRatings(token: string) {
       for (let resp of this.responses) {
@@ -133,4 +140,5 @@ export interface Question {
   MAX_ANSWERS: number;
   RATINGS_PER_TRANCHE: number;
   CURRENT_RATING_TRANCHE: number;
+  answers_remaining?: number;
 }

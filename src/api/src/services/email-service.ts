@@ -86,7 +86,7 @@ export class EmailService {
     let message: MailOptions = {
       from: MAIL_FROM,
       to: `"${toName}" <${toEmail}>`,
-      subject: `${subject} : ${APPLICATION_NAME}`,
+      subject: `${subject}`,
       html: baseContent,
     };
 

@@ -184,7 +184,7 @@ questionRouter.get(
     let validStates = [QuestionState.Opinionate, QuestionState.Inspire, QuestionState.Rate];
 
     if (payload) {
-      if (!validStates.includes(payload.data.STATE)) return res.status(403).send();
+      if (!validStates.includes(payload.data?.STATE)) return res.status(403).send();
       return res.json(payload);
     }
 
@@ -250,7 +250,11 @@ questionRouter.get(
     let participant = await participantService.getByToken(token);
 
     if (participant && question && question.data && question.data.ID) {
-      let answers = await answerService.getSampleForQuestion(question.data.ID, 4, participant.ID);
+      let answers = await answerService.getSampleForQuestion(
+        question.data.ID,
+        question.data.RATINGS_PER_TRANCHE,
+        participant.ID
+      );
       return res.json({ data: answers });
     }
 
@@ -321,7 +325,7 @@ async function returnQuestion(token: string, justAdded: boolean) {
 
       delete q.OWNER;
       delete q.CREATE_DATE;
-      delete q.RATINGS_PER_TRANCHE;
+      //delete q.RATINGS_PER_TRANCHE;
       delete q.CURRENT_RATING_TRANCHE;
 
       q.answer_count = participant.ANSWERS_SUBMITTED;
