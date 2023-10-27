@@ -50,7 +50,7 @@
     <v-data-table :search="search" :headers="headers" :items="participants">
       <template v-slot:item.actions="{ item }">
         <div>
-          <v-btn icon="mdi-delete" variant="tonal" color="warning" @click="deleteClick(item.raw.ID)"></v-btn>
+          <v-btn icon="mdi-delete" variant="tonal" color="warning" @click="deleteClick(item.ID)"></v-btn>
         </div>
       </template>
     </v-data-table>

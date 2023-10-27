@@ -110,7 +110,7 @@ export default {
       }
     },
     rowClick(event: Event, thing: any) {
-      this.select(thing.item.raw);
+      this.select(thing.item);
     },
   },
 };

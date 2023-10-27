@@ -32,7 +32,7 @@
     </template>
 
     <v-data-table :search="search" :headers="headers" :items="items" :loading="isLoading" @click:row="rowClick">
-      <template v-slot:item.state="{ item }">{{ showState(item.raw.STATE) }}</template>
+      <template v-slot:item.state="{ item }">{{ showState(item.STATE) }}</template>
     </v-data-table>
   </base-card>
 
@@ -88,7 +88,7 @@ export default {
       await this.loadQuestions();
     },
     rowClick(event: Event, thing: any) {
-      this.select(clone(thing.item.raw));
+      this.select(clone(thing.item));
     },
     addQuesionClick() {
       this.select({

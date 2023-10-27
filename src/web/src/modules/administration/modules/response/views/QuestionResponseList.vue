@@ -114,7 +114,7 @@ export default {
       this.status = this.statusOptions[1];
     },
     rowClick(event: Event, thing: any) {
-      this.select(thing.item.raw);
+      this.select(thing.item);
     },
   },
 };
