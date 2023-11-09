@@ -1,4 +1,4 @@
-import { sample, sampleSize, shuffle } from "lodash";
+import { sampleSize, shuffle } from "lodash";
 import { DB_SCHEMA, DB_ANSWER_TABLE, DB_RATING_TABLE } from "../config";
 import { db } from "../data";
 import { Answer } from "../data/models";

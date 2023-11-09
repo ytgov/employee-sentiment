@@ -30,11 +30,22 @@
           style="max-width: 300px"></v-select>
       </template>
 
-      <v-data-table :search="search" :headers="headers" :items="filteredList" @click:row="rowClick"> </v-data-table>
+      <v-data-table :search="search" :headers="headers" :items="filteredList" @click:row="rowClick">
+        <template v-slot:item.DONE_MODERATING="{ item }">
+          {{ item.DONE_MODERATING == 1 ? "Yes" : "No" }}
+        </template>
+        <template v-slot:item.DELETED_FLAG="{ item }">
+          {{ item.DELETED_FLAG == 1 ? "Yes" : "No" }}
+        </template>
+        <template v-slot:item.MODERATED_TEXT="{ item }">
+          <span v-if="item.MODERATED_TEXT != item.ANSWER_TEXT" :class="`text-error`">{{ item.MODERATED_TEXT }}</span>
+          <span v-else>{{ item.MODERATED_TEXT }}</span>
+        </template>
+      </v-data-table>
     </base-card>
   </div>
 
-  <response-editor></response-editor>
+  <response-editor :items="filteredList"></response-editor>
 </template>
 <script lang="ts">
 import { mapActions, mapState } from "pinia";
@@ -48,7 +59,7 @@ export default {
   data: () => ({
     headers: [
       { title: "Category", key: "CATEGORY" },
-      { title: "Response", key: "ANSWER_TEXT" },
+      { title: "Response", key: "MODERATED_TEXT" },
       { title: "Deleted", key: "DELETED_FLAG" },
       { title: "Complete", key: "DONE_MODERATING" },
     ],

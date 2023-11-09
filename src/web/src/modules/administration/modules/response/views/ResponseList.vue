@@ -16,7 +16,7 @@
 
   <h1>Responses</h1>
 
-      ** maybe moderators only see unmoderated, admins see all
+  ** maybe moderators only see unmoderated, admins see all
   <base-card showHeader="t" heading="">
     <template v-slot:left>
       <v-select
@@ -31,7 +31,6 @@
         style="width: 100px"></v-select>
     </template>
     <template v-slot:right>
-
       <v-select
         label="Status"
         :items="['Unmoderated', 'Moderated']"
@@ -42,10 +41,21 @@
         style="width: 100px"></v-select>
     </template>
 
-    <v-data-table :search="search" :headers="headers" :items="filteredList" @click:row="rowClick"> </v-data-table>
+    <v-data-table :search="search" :headers="headers" :items="filteredList" @click:row="rowClick">
+      <template v-slot:item.DONE_MODERATING="{ item }">
+        {{ item.DONE_MODERATING == 1 ? "Yes" : "No" }}
+      </template>
+      <template v-slot:item.DELETED_FLAG="{ item }">
+        {{ item.DELETED_FLAG == 1 ? "Yes" : "No" }}
+      </template>
+      <template v-slot:item.MODERATED_TEXT="{ item }">
+        <span v-if="item.MODERATED_TEXT != item.ANSWER_TEXT" :class="`text-error`">{{ item.MODERATED_TEXT }}</span>
+        <span v-else>{{ item.MODERATED_TEXT }}</span>
+      </template>
+    </v-data-table>
   </base-card>
 
-  <response-editor></response-editor>
+  <response-editor :items="filteredList"></response-editor>
 </template>
 <script lang="ts">
 import { mapActions, mapState } from "pinia";
@@ -58,7 +68,7 @@ export default {
   data: () => ({
     headers: [
       { title: "Category", key: "CATEGORY" },
-      { title: "Response", key: "ANSWER_TEXT" },
+      { title: "Response", key: "MODERATED_TEXT" },
       { title: "Deleted", key: "DELETED_FLAG" },
       { title: "Complete", key: "DONE_MODERATING" },
     ],
@@ -87,9 +97,9 @@ export default {
       }
 
       if (this.status == "Moderated") {
-        items = items.filter((i) => (i.DONE_MODERATING == 1));
+        items = items.filter((i) => i.DONE_MODERATING == 1);
       } else if (this.status == "Unmoderated") {
-        items = items.filter((i) => (i.DONE_MODERATING == 0));
+        items = items.filter((i) => i.DONE_MODERATING == 0);
       }
 
       return items;

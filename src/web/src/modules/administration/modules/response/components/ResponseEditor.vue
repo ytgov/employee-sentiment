@@ -64,7 +64,12 @@
         </v-row>
       </v-card-text>
       <v-card-actions class="mx-4 mb-2">
-        <v-btn color="primary" variant="flat" @click="saveClick">Moderation Complete</v-btn>
+        <v-btn color="primary" variant="flat" @click="saveClick" class="mr-4"
+          ><v-icon class="mr-2">mdi-check</v-icon> Complete</v-btn
+        >
+        <v-btn color="primary" variant="flat" @click="saveNextClick" :disabled="!nextItem"
+          ><v-icon class="mr-2">mdi-arrow-right</v-icon> Complete and Next</v-btn
+        >
         <v-spacer></v-spacer>
         <v-btn color="yg_sun" variant="outlined" @click="close">Close</v-btn>
       </v-card-actions>
@@ -78,15 +83,23 @@ import { useResponseStore } from "../store";
 
 export default {
   name: "UserEditor",
+  props: ["items"],
   data: () => ({}),
   computed: {
     ...mapState(useResponseStore, ["response"]),
     visible() {
       return this.response ? true : false;
     },
+    nextItem() {
+      if (this.items?.length < 1) return undefined;
+
+      let otherItems = this.items?.filter((i: any) => i.ID != this.response?.ID);
+
+      return otherItems ? otherItems[0] : undefined;
+    },
   },
   methods: {
-    ...mapActions(useResponseStore, ["unselect", "update"]),
+    ...mapActions(useResponseStore, ["select", "unselect", "update"]),
     close() {
       this.unselect();
     },
@@ -96,6 +109,16 @@ export default {
 
         this.update().then(() => {
           this.close();
+        });
+      }
+    },
+    saveNextClick() {
+      if (this.response) {
+        this.response.DONE_MODERATING = 1;
+
+        this.update().then(() => {
+          if (this.nextItem) this.select(this.nextItem);
+          else this.close();
         });
       }
     },
