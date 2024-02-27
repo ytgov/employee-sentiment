@@ -55,9 +55,7 @@ questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Requ
   const { id } = req.params;
   let { subject, body, recipients } = req.body;
   let token = "123456789";
-
-  console.log("eq body", req.body);
-
+  
   if (recipients.includes("Opinionators")) {
     await emailService.sendOpinionatorEmail(
       { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
