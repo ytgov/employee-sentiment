@@ -95,6 +95,11 @@ export class EmailService {
       return null;
     }
 
-    return this.transport.sendMail(message);
+    return this.transport
+      .sendMail(message)
+      .then((resp) => resp)
+      .catch((err) => {
+        console.log("EMAILING ERROR", err);
+      });
   }
 }
