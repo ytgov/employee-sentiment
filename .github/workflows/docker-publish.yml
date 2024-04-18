@@ -2,7 +2,7 @@ name: Build and Push
 
 on:
   push:
-    branches: [ main ]
+    branches: [main, test]
 
 env:
   REGISTRY: ghcr.io
@@ -22,9 +22,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate release tag
+        id: generate_release_tag
+        uses: amitsingh-007/next-release-tag@v4.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: "v"
+          tag_template: "yyyy.mm.dd.i"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository }}:${{ steps.generate_release_tag.outputs.next_release_tag }}
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.generate_release_tag.outputs.next_release_tag }}
