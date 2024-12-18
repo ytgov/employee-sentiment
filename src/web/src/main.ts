@@ -6,7 +6,7 @@ import { AuthHelper } from "@/plugins/auth";
 // Plugins
 import { registerPlugins } from "./plugins";
 import { Auth0Plugin } from "@auth0/auth0-vue";
-import { Router } from "vue-router";
+import { RouteLocationNormalizedLoaded, Router } from "vue-router";
 
 const pinia = createPinia();
 
@@ -23,6 +23,7 @@ declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
     $auth: Auth0Plugin;
     $router: Router;
+    $route: RouteLocationNormalizedLoaded;
   }
 }
 
