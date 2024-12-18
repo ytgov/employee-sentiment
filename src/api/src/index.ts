@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      "default-src": ["'self'", `${AUTH0_DOMAIN}`],
+      "default-src": ["'self'", `${AUTH0_DOMAIN.replace(/\/$/, "")}`],
       "base-uri": ["'self'"],
       "block-all-mixed-content": [],
       "font-src": ["'self'", "https:", "data:"],
@@ -23,7 +23,7 @@ app.use(
       "script-src-attr": ["'none'"],
       "style-src": ["'self'", "https:", "'unsafe-inline'"],
       "worker-src": ["'self'", "blob:"],
-      "connect-src": ["'self'", `${AUTH0_DOMAIN}`],
+      "connect-src": ["'self'", `${AUTH0_DOMAIN.replace(/\/$/, "")}`],
     },
   })
 );
