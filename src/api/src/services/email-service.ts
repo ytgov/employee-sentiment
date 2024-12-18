@@ -34,6 +34,10 @@ export class EmailService {
       /``RESULTS_URL``/,
       `<a href="${FRONTEND_URL}/results/${questionToken}">${FRONTEND_URL}/results/${questionToken}</a>`
     );
+    body = body.replace(
+      /``RATING_URL``/,
+      `<a href="${FRONTEND_URL}/rating/${token}">${FRONTEND_URL}/rating/${token}</a>`
+    );
 
     await this.sendEmail(recipient.fullName, recipient.email, subject, body);
   }
