@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { ReturnValidationErrors } from "../middleware";
+import { requireAdmin, ReturnValidationErrors } from "../middleware";
 import { param } from "express-validator";
 import { AnswerService, EmailService, ParticipantService, QuestionService } from "../services";
 import { checkJwt, loadUser } from "../middleware/authz.middleware";
@@ -13,13 +13,13 @@ const answerService = new AnswerService();
 const participantService = new ParticipantService();
 const emailService = new EmailService();
 
-questionRouter.get("/", async (req: Request, res: Response) => {
+questionRouter.get("/", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
   let list = await questionService.getAll();
 
   res.json({ data: list });
 });
 
-questionRouter.post("/", async (req: Request, res: Response) => {
+questionRouter.post("/", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
   let {
     CURRENT_RATING_TRANCHE,
     DISPLAY_TEXT,
@@ -51,7 +51,7 @@ questionRouter.post("/", async (req: Request, res: Response) => {
   res.json({ data: question });
 });
 
-questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Request, res: Response) => {
+questionRouter.post("/:id/send-email-test", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
   const { id } = req.params;
   let { subject, body, recipients } = req.body;
   let token = "123456789";
@@ -84,7 +84,7 @@ questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Requ
   res.json({ data: "sent" });
 });
 
-questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, res: Response) => {
+questionRouter.post("/:id/send-email", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
   const { id } = req.params;
   let { subject, body, recipients } = req.body;
   let participants = await new ParticipantService().getByQuestionId(parseInt(id));
@@ -105,7 +105,11 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
       );
     }
 
-    await questionService.createEvent(parseInt(id), `Opinionators email sent - ${opin.length} emails`, `By: ${req.user.EMAIL}`);
+    await questionService.createEvent(
+      parseInt(id),
+      `Opinionators email sent - ${opin.length} emails`,
+      `By: ${req.user.EMAIL}`
+    );
   }
   if (question && recipients.includes("Raters")) {
     let opin = participants.filter((p) => p.IS_RATER == 1);
@@ -120,13 +124,17 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
       );
     }
 
-    await questionService.createEvent(parseInt(id), `Raters email sent - ${opin.length} emails`, `By: ${req.user.EMAIL}`);
+    await questionService.createEvent(
+      parseInt(id),
+      `Raters email sent - ${opin.length} emails`,
+      `By: ${req.user.EMAIL}`
+    );
   }
 
   res.json({ data: "sent" });
 });
 
-questionRouter.put("/:id", async (req: Request, res: Response) => {
+questionRouter.put("/:id", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
   let { id } = req.params;
   let {
     CURRENT_RATING_TRANCHE,
@@ -160,7 +168,7 @@ questionRouter.put("/:id", async (req: Request, res: Response) => {
   res.json({ data: question });
 });
 
-questionRouter.get("/:id/events", async (req: Request, res: Response) => {
+questionRouter.get("/:id/events", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
   let { id } = req.params;
 
   const list = await questionService.getEvents(parseInt(id));
@@ -190,6 +198,9 @@ questionRouter.get(
 // display the results for a question
 questionRouter.get(
   "/:questionId/results",
+  checkJwt,
+  loadUser,
+  requireAdmin,
   [param("questionId").notEmpty()],
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
