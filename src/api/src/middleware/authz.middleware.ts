@@ -1,39 +1,41 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "express-jwt";
+import { expressjwt as jwt } from "express-jwt";
 import axios from "axios";
-import jwksRsa from "jwks-rsa";
+import jwksRsa, { type GetVerificationKey } from "jwks-rsa";
 import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "../config";
 import { UserService } from "../services";
 import { UserStatus } from "../data/models";
+
+console.log(AUTH0_AUDIENCE, AUTH0_DOMAIN);
 
 export const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: `${AUTH0_DOMAIN}.well-known/jwks.json`,
-  }),
+    jwksUri: `${AUTH0_DOMAIN}/.well-known/jwks.json`,
+  }) as GetVerificationKey,
 
+  // Validate the audience and the issuer.
   audience: AUTH0_AUDIENCE,
-  issuer: AUTH0_DOMAIN,
+  issuer: `${AUTH0_DOMAIN}/`,
   algorithms: ["RS256"],
 });
 
 export async function loadUser(req: Request, res: Response, next: NextFunction) {
   const db = new UserService();
-
-  let sub = req.user.sub;
+  let sub = req.auth.sub;
   const token = req.headers.authorization || "";
   let u = await db.getBySub(sub);
 
   if (u) {
-    req.user = { ...req.user, ...u };
+    req.user = { ...req.auth, ...u };
     return next();
   }
 
   await axios
-    .get(`${AUTH0_DOMAIN}userinfo`, { headers: { authorization: token } })
-    .then(async (resp) => {
+    .get(`${AUTH0_DOMAIN}/userinfo`, { headers: { authorization: token } })
+    .then(async (resp: any) => {
       if (resp.data && resp.data.sub) {
         let email = resp.data.email;
         let first_name = resp.data.given_name;
@@ -43,14 +45,14 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
         let u = await db.getBySub(sub);
 
         if (u) {
-          req.user = { ...req.user, ...u };
+          req.user = { ...req.auth, ...u };
         } else {
           if (!email) email = `${first_name}.${last_name}@yukon-no-email.ca`;
 
           let e = await db.getByEmail(email);
 
           if (e && e.USER_ID == "SUB_MISSING") {
-            req.user = { ...req.user, ...e };
+            req.user = { ...req.auth, ...e };
 
             await db.update(email, {
               USER_ID: sub,
@@ -74,15 +76,21 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
             IS_ADMIN: "N",
             ROLE: "",
           });
+
           req.user = { ...req.user, ...u };
         }
       } else {
-        console.log("Payload from Auth0 is strange or failed for", req.user);
+        console.log("Payload from Auth0 is strange or failed for", req.auth);
+      }
+
+      if (!req.user) {
+        // the user doesn't exist in the database yet, therefore not authorize
+        return res.status(401).send("Not Authorized");
       }
 
       next();
     })
-    .catch((err) => {
+    .catch((err: any) => {
       console.log("ERROR pulling userinfo", err);
     });
 }
