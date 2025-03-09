@@ -9,11 +9,6 @@ const routes = [
         path: "/",
         component: () => import("../views/Home.vue"),
       },
-      {
-        path: "/profile",
-        component: () => import("../views/Profile.vue"),
-        beforeEnter: authGuard,
-      },
     ],
   },
 ];
