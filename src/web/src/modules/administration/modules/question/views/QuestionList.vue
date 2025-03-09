@@ -28,7 +28,7 @@
         class="ml-2"></v-text-field>
     </template>
     <template v-slot:right>
-      <v-btn color="primary" variant="tonal" size="small" class="mr-5" @click="addQuesionClick">Add Question</v-btn>
+      <v-btn color="primary" variant="flat" size="small" class="mr-5" @click="addQuesionClick">Add Question</v-btn>
     </template>
 
     <v-data-table :search="search" :headers="headers" :items="items" :loading="isLoading" @click:row="rowClick">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-btn color="primary" variant="tonal" size="small" class="mr-5" @click="doShow">Add User</v-btn>
+    <v-btn color="primary" variant="flat" size="small" class="mr-5" @click="doShow">Add User</v-btn>
 
     <v-dialog v-model="showEdit" width="700px" transition="dialog-bottom-transition" persistent>
       <template v-slot:default="{ isActive }">
