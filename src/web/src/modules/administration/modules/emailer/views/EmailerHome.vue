@@ -79,13 +79,18 @@
           label="Email body"
           density="comfortable"
           variant="outlined"
-          rows="3"></v-textarea>
+          rows="5"></v-textarea>
 
         <ul>
           <li>Use <b>``QUESTION_URL``</b> for link to Opinionator page</li>
           <li>Use <b>``RATING_URL``</b> for link to Rater page</li>
           <li>Use <b>``INSPIRE_URL``</b> for link to Inspire page</li>
           <li>Use <b>``RESULTS_URL``</b> for link to Results page</li>
+          <li>Use Markdown sytax like <b>[Click here](``QUESTION_URL``)</b> to make it show as a link 'Click here'</li>
+          <li>
+            Use HTML syntax like <b>&lt;a href="``QUESTION_URL``"&gt;Click here&lt;/a&gt;</b> to make it show as a link
+            'Click here'
+          </li>
         </ul>
 
         <v-label></v-label>
@@ -192,8 +197,10 @@ export default {
       await this.sendEmail();
     },
     async questionChange() {
-      console.log("QUESTION IS", this.question);
       if (this.question && this.question.ID) {
+        this.email.subject = this.question.EMAIL_SUBJECT ?? "";
+        this.email.body = this.question.EMAIL_BODY ?? "";
+
         let parts = await this.getParticipants(this.question.ID);
 
         console.log(parts);

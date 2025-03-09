@@ -141,6 +141,8 @@ export interface Question {
   MAX_ANSWERS: number;
   RATINGS_PER_TRANCHE: number;
   CURRENT_RATING_TRANCHE: number;
+  EMAIL_SUBJECT?: string;
+  EMAIL_BODY?: string;
 }
 
 export interface Event {

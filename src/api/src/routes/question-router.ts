@@ -55,7 +55,9 @@ questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Requ
   const { id } = req.params;
   let { subject, body, recipients } = req.body;
   let token = "123456789";
-  
+
+  await questionService.update(parseInt(id), { EMAIL_SUBJECT: subject, EMAIL_BODY: body });
+
   if (recipients.includes("Opinionators")) {
     await emailService.sendOpinionatorEmail(
       { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
@@ -83,6 +85,8 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
   let { subject, body, recipients } = req.body;
   let participants = await new ParticipantService().getByQuestionId(parseInt(id));
   let question = await questionService.getById(parseInt(id));
+
+  await questionService.update(parseInt(id), { EMAIL_SUBJECT: subject, EMAIL_BODY: body });
 
   if (question && recipients.includes("Opinionators")) {
     let opin = participants.filter((p) => p.IS_RESPONDER == 1);
