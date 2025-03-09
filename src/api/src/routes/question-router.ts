@@ -66,6 +66,8 @@ questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Requ
       token,
       ""
     );
+
+    await questionService.createEvent(parseInt(id), "Opinionator test email sent", `By: ${req.user.EMAIL}`);
   }
   if (recipients.includes("Raters")) {
     await emailService.sendRaterEmail(
@@ -75,6 +77,8 @@ questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Requ
       token,
       ""
     );
+
+    await questionService.createEvent(parseInt(id), "Opinionator test email sent", `By: ${req.user.EMAIL}`);
   }
 
   res.json({ data: "sent" });
@@ -100,6 +104,8 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
         question.QUESTION_NOUNCE
       );
     }
+
+    await questionService.createEvent(parseInt(id), `Opinionators email sent - ${opin.length} emails`, `By: ${req.user.EMAIL}`);
   }
   if (question && recipients.includes("Raters")) {
     let opin = participants.filter((p) => p.IS_RATER == 1);
@@ -113,6 +119,8 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
         question.QUESTION_NOUNCE
       );
     }
+
+    await questionService.createEvent(parseInt(id), `Raters email sent - ${opin.length} emails`, `By: ${req.user.EMAIL}`);
   }
 
   res.json({ data: "sent" });
@@ -155,22 +163,7 @@ questionRouter.put("/:id", async (req: Request, res: Response) => {
 questionRouter.get("/:id/events", async (req: Request, res: Response) => {
   let { id } = req.params;
 
-  let list = [
-    {
-      ID: 12,
-      TITLE: "Opinionator list created",
-      CREATE_DATE: new Date(),
-      QUESTION_ID: id,
-      user: { display_name: "Michael Johnson" },
-    },
-    {
-      ID: 12,
-      TITLE: "Opinionator email sent to 46 participants",
-      CREATE_DATE: new Date(),
-      QUESTION_ID: id,
-      user: { display_name: "Eckhard Krabel" },
-    },
-  ];
+  const list = await questionService.getEvents(parseInt(id));
 
   res.json({ data: list });
 });

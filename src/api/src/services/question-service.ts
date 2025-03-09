@@ -53,4 +53,12 @@ export class QuestionService implements GenericService<Question> {
 
     if (inserts.length > 0) return db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).insert(inserts);
   }
+
+  async getEvents(QUESTION_ID: number): Promise<any> {
+    return db("QUESTION_HISTORY").withSchema(DB_SCHEMA).where({ QUESTION_ID }).orderBy("CREATE_DATE", "desc");
+  }
+
+  async createEvent(QUESTION_ID: number, ACTION: string, DESCRIPTION: string): Promise<any> {
+    return db("QUESTION_HISTORY").withSchema(DB_SCHEMA).insert({ QUESTION_ID, ACTION, DESCRIPTION, CREATE_DATE: new Date() });
+  }
 }

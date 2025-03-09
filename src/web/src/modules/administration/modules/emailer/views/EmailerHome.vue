@@ -109,7 +109,7 @@
 
           <v-list>
             <div v-for="(event, idx) of eventLog">
-              <v-list-item :title="event.TITLE" :subtitle="formatSubtitle(event)"> </v-list-item>
+              <v-list-item :title="event.ACTION" :subtitle="formatSubtitle(event)"> </v-list-item>
               <v-divider v-if="idx < eventLog.length - 1" />
             </div>
           </v-list>
@@ -188,7 +188,7 @@ export default {
       await this.loadQuestions();
     },
     formatSubtitle(item: Event) {
-      return `${moment(item.CREATE_DATE).format("YYYY-MM-DD @ h:mm A")} by ${item.user.display_name}`;
+      return `${moment(item.CREATE_DATE).format("YYYY-MM-DD @ h:mm A")} - ${item.DESCRIPTION}`;
     },
     async sendTestClick() {
       await this.sendTest();

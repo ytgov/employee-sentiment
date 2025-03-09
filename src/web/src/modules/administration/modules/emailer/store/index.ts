@@ -108,6 +108,7 @@ export const useEmailerStore = defineStore("emailer", {
           .secureCall("post", `${QUESTION_URL}/${this.question.ID}/send-email`, { ...this.email })
           .then(async (resp) => {
             //await this.loadQuestions();
+            await this.loadEvents();
             m.notify({ variant: "success", text: "Email sent" });
           })
           .catch();
@@ -147,10 +148,10 @@ export interface Question {
 
 export interface Event {
   ID?: number;
-  TITLE: string;
-  CREATE_DATE: Date;
   QUESTION_ID: number;
-  user: { display_name: string };
+  CREATE_DATE: Date;
+  ACTION: string;
+  DESCRIPTION: string;
 }
 
 export interface Email {
