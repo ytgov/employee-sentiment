@@ -95,6 +95,16 @@
           label="Moderators"
           variant="outlined"
           density="comfortable"></v-autocomplete>
+
+        <v-autocomplete
+          :items="moderators"
+          v-model="question.owners"
+          multiple
+          item-title="display_name"
+          item-value="EMAIL"
+          label="Owners"
+          variant="outlined"
+          density="comfortable"></v-autocomplete>
       </v-card-text>
       <v-card-actions class="mx-4 mb-2">
         <v-btn color="primary" variant="flat" @click="saveClick">Save</v-btn>

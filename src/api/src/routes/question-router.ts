@@ -31,6 +31,7 @@ questionRouter.post("/", checkJwt, loadUser, requireAdmin, async (req: Request, 
     MODERATABLE,
     ZERO_RATING_FLAG,
     moderators,
+    owners,
   } = req.body;
 
   let question = await questionService.create({
@@ -47,6 +48,7 @@ questionRouter.post("/", checkJwt, loadUser, requireAdmin, async (req: Request, 
   });
 
   await questionService.setModerators(question[0].ID, moderators);
+  await questionService.setOwners(question[0].ID, owners);
 
   res.json({ data: question });
 });
@@ -148,6 +150,7 @@ questionRouter.put("/:id", checkJwt, loadUser, requireAdmin, async (req: Request
     ZERO_RATING_FLAG,
     QUESTION_NOUNCE,
     moderators,
+    owners,
   } = req.body;
 
   let question = await questionService.update(parseInt(id), {
@@ -164,6 +167,7 @@ questionRouter.put("/:id", checkJwt, loadUser, requireAdmin, async (req: Request
   });
 
   await questionService.setModerators(parseInt(id), moderators);
+  await questionService.setOwners(parseInt(id), owners);
 
   res.json({ data: question });
 });

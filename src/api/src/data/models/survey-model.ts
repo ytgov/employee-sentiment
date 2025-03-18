@@ -15,6 +15,7 @@ export interface Question {
   ZERO_RATING_FLAG: number;
 
   moderators?: string[];
+  owners?: string[];
 }
 
 export enum QuestionState {
