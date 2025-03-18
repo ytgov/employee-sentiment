@@ -105,12 +105,17 @@
       <v-divider vertical />
       <v-col>
         <v-card elevation="0" variant="tonal" color="#F2A900">
-          <v-card-title>Event Log</v-card-title>
+          <v-card-title class="pt-4">Event Log</v-card-title>
 
           <v-list>
             <div v-for="(event, idx) of eventLog">
-              <v-list-item :title="event.ACTION" :subtitle="formatSubtitle(event)"> </v-list-item>
-              <v-divider v-if="idx < eventLog.length - 1" />
+              <v-divider />
+              <v-list-item :title="event.ACTION">
+                <v-list-item-subtitle class="ml-1 d-flex text-subtitle-2">
+                  On: {{ formatSubtitle(event) }}<br />
+                  {{ event.DESCRIPTION }}
+                </v-list-item-subtitle>
+              </v-list-item>
             </div>
           </v-list>
         </v-card>
@@ -188,7 +193,7 @@ export default {
       await this.loadQuestions();
     },
     formatSubtitle(item: Event) {
-      return `${moment(item.CREATE_DATE).format("YYYY-MM-DD @ h:mm A")} - ${item.DESCRIPTION}`;
+      return `${moment(item.CREATE_DATE).format("YYYY-MM-DD @ h:mm A")}`;
     },
     async sendTestClick() {
       await this.sendTest();
