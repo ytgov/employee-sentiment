@@ -1,4 +1,4 @@
-import { DB_SCHEMA, DB_USER_TABLE } from "../config";
+import { DB_SCHEMA, DB_USER_QUESTION_TABLE, DB_USER_TABLE } from "../config";
 import { db } from "../data";
 import { User, User_Create, User_Update } from "../data/models";
 import { GenericService } from "./generic-service";
@@ -28,5 +28,10 @@ export class UserService implements GenericService<User> {
 
   async update(EMAIL: string, item: User_Update): Promise<User> {
     return db(DB_USER_TABLE).withSchema(DB_SCHEMA).where({ EMAIL }).update(item);
+  }
+
+  async delete(EMAIL: string): Promise<void> {
+    await db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).where({ EMAIL }).delete();
+    return db(DB_USER_TABLE).withSchema(DB_SCHEMA).where({ EMAIL }).delete();
   }
 }

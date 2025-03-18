@@ -83,6 +83,14 @@ export const useUserAdminStore = defineStore("userAdmin", {
         return resp.data;
       });
     },
+    async deleteUser(user: any) {
+      let api = useApiStore();
+
+      return api.secureCall("delete", `${USERS_URL}/${user.EMAIL}`).then(async (resp) => {
+        await this.getAllUsers();
+        return resp.data;
+      });
+    },
   },
 });
 

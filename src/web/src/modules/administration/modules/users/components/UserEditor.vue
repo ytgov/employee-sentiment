@@ -49,6 +49,18 @@
       <v-card-actions class="mx-4 mb-2">
         <v-btn color="primary" variant="flat" @click="saveUser()">Save</v-btn>
         <v-spacer></v-spacer>
+
+        <ConfirmButton
+          button-text="Delete"
+          button-size="default"
+          button-color="error"
+          button-class="mr-4"
+          confirm-title="Delete User?"
+          confirm-text="Are you sure you want to delete this user?"
+          confirm-variant="error"
+          confirm-button-text="Yes"
+          @on-confirm="doDeleteUser" />
+
         <v-btn color="yg_sun" variant="outlined" @click="close">Close</v-btn>
       </v-card-actions>
     </v-card>
@@ -58,6 +70,7 @@
 <script lang="ts">
 import { mapActions, mapState } from "pinia";
 import { useUserAdminStore } from "../store";
+import ConfirmButton from "@/components/ConfirmButton.vue";
 
 export default {
   name: "UserEditor",
@@ -69,8 +82,13 @@ export default {
     },
   },
   methods: {
-    ...mapActions(useUserAdminStore, ["unselectUser", "saveUser"]),
+    ...mapActions(useUserAdminStore, ["unselectUser", "saveUser", "deleteUser"]),
     close() {
+      this.unselectUser();
+    },
+
+    async doDeleteUser() {
+      await this.deleteUser(this.selectedUser);
       this.unselectUser();
     },
   },

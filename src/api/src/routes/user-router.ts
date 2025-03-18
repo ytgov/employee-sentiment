@@ -82,6 +82,27 @@ userRouter.put(
   }
 );
 
+userRouter.delete(
+  "/:email",
+  requireAdmin,
+  [param("email").notEmpty().isString()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { email } = req.params;
+
+    let existing = await db.getByEmail(email);
+
+    if (existing) {
+      await db.delete(email);
+
+      return res.json({
+        messages: [{ variant: "success", text: "User deleted" }],
+      });
+    }
+
+    res.status(404).send();
+  }
+);
 userRouter.post("/search-directory", async (req: Request, res: Response) => {
   let { terms } = req.body;
 
