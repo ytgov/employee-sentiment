@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="3" color="#F2A90066" :to="`/administration/moderation/${question.ID}`" style="height: 150px">
+  <v-card elevation="3" color="#F2A90066" style="height: 150px" @click="goToModeration">
     <v-card-text style="text-align: right">
       <v-icon class="float-left" style="font-size: 90px; opacity: 25%; position: absolute; left: 0px; margin-top: 30px"
         >mdi-lightbulb</v-icon
@@ -14,7 +14,6 @@
           </span>
           <span style="font-weight: 700">{{ stateTitle(question.STATE) }}</span>
         </div>
-        <br />
 
         <div class="float-right text-center ml-10">
           <span style="font-size: 40px">{{ ratingCountForQuestion(question.ID) }}</span
@@ -60,6 +59,10 @@ export default {
       "unmoderatedCountForQuestion",
       "ratingCountForQuestion",
     ]),
+
+    goToModeration() {
+      this.$router.push(`/administration/moderation/${this.question.ID}`);
+    },
   },
 };
 </script>
