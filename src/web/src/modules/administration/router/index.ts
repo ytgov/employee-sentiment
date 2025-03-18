@@ -8,6 +8,10 @@ const routes = [
     component: () => import("@/layouts/Default.vue"),
     children: [
       {
+        path: "/administration",
+        redirect: "/dashboard",
+      },
+      {
         path: "/dashboard",
         component: () => import("../views/Dashboard.vue"),
         beforeEnter: requireAccess,
