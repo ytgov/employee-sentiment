@@ -113,6 +113,14 @@ export default {
 
     await this.loadItems();
   },
+  mounted() {
+    const statusHint = this.$route.query.status as string;
+
+    if (statusHint) {
+      console.log("statusHint", statusHint);
+      this.status = statusHint;
+    }
+  },
   methods: {
     ...mapActions(useResponseStore, ["loadResponsesFor", "select"]),
     ...mapActions(useQuestionStore, ["loadQuestions"]),
@@ -123,7 +131,6 @@ export default {
       if (this.questions.length > 0 && this.questions[0].ID) {
         this.question = this.questions.filter((q) => q.ID == this.questionId)[0];
       }
-      this.status = this.statusOptions[1];
     },
     showText(item: any) {
       if (this.status == "Moderated") {

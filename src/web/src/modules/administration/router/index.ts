@@ -46,6 +46,12 @@ const routes = [
         },
       },
       {
+        path: "/administration/results/:questionId",
+        component: () => import("../modules/question/views/Results.vue"),
+        beforeEnter: requireAccess,
+        meta: {},
+      },
+      {
         path: "/administration/questions",
         component: () => import("../modules/question/views/QuestionList.vue"),
         beforeEnter: requireAccess,

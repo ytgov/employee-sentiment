@@ -47,8 +47,8 @@ questionRouter.post("/", checkJwt, loadUser, requireAdmin, async (req: Request, 
     QUESTION_NOUNCE: makeToken(),
   });
 
-  await questionService.setModerators(question[0].ID, moderators);
-  await questionService.setOwners(question[0].ID, owners);
+  await questionService.setModerators(question[0].ID, moderators ?? []);
+  await questionService.setOwners(question[0].ID, owners ?? []);
 
   res.json({ data: question });
 });
@@ -166,8 +166,8 @@ questionRouter.put("/:id", checkJwt, loadUser, requireAdmin, async (req: Request
     QUESTION_NOUNCE: QUESTION_NOUNCE || makeToken(),
   });
 
-  await questionService.setModerators(parseInt(id), moderators);
-  await questionService.setOwners(parseInt(id), owners);
+  await questionService.setModerators(parseInt(id), moderators ?? []);
+  await questionService.setOwners(parseInt(id), owners ?? []);
 
   res.json({ data: question });
 });
@@ -193,6 +193,28 @@ questionRouter.get(
     if (payload) {
       if (!validStates.includes(payload.data?.STATE)) return res.status(403).send();
       return res.json(payload);
+    }
+
+    res.status(404).send();
+  }
+);
+
+// display the results for a question
+questionRouter.get(
+  "/:questionId/admin-results",
+  checkJwt,
+  loadUser,
+  requireAdmin,
+  [param("questionId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { questionId } = req.params;
+    let question = await questionService.getById(parseInt(questionId));
+
+    if (question) {
+      // should also check for applicable state
+      let answers = await answerService.getAllForQuestion(question.ID, question.ZERO_RATING_FLAG == 1);
+      return res.json({ data: { question, answers: reverse(sortBy(answers, "rating")) } });
     }
 
     res.status(404).send();
