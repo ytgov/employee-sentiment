@@ -46,8 +46,26 @@ const routes = [
         },
       },
       {
-        path: "/administration/results/:questionId",
-        component: () => import("../modules/question/views/Results.vue"),
+        path: "/administration/preview/results/:questionId",
+        component: () => import("../modules/question/views/PreviewResults.vue"),
+        beforeEnter: requireAccess,
+        meta: {},
+      },
+      {
+        path: "/administration/preview/question/:questionId",
+        component: () => import("../modules/question/views/PreviewSurvey.vue"),
+        beforeEnter: requireAccess,
+        meta: {},
+      },
+      {
+        path: "/administration/preview/inspire/:questionId",
+        component: () => import("../modules/question/views/PreviewInspire.vue"),
+        beforeEnter: requireAccess,
+        meta: {},
+      },
+      {
+        path: "/administration/preview/rating/:questionId",
+        component: () => import("../modules/question/views/PreviewRating.vue"),
         beforeEnter: requireAccess,
         meta: {},
       },
@@ -88,10 +106,10 @@ async function requireAccess(to: RouteLocation): Promise<boolean | string> {
 
   if (user.STATUS != "Active") return "/NotAuthorized?Requires-Active";
 
-  if (to.meta && to.meta.allow_admin && user.IS_ADMIN == "Y") return true;
+  if (to.meta && to.meta.allow_admin && (user.IS_ADMIN == "Y" || user.IS_OWNER == "Y")) return true;
 
   if (to.meta && to.meta.require_admin) {
-    if (user.IS_ADMIN != "Y") return "/NotAuthorized?Requires-Admin";
+    if (user.IS_ADMIN != "Y" && user.IS_OWNER != "Y") return "/NotAuthorized?Requires-Admin";
     return true;
   }
 

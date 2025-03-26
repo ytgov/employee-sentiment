@@ -2,20 +2,20 @@ import express, { Request, Response } from "express";
 import { ParticipantService, QuestionService } from "../services";
 import { Participant } from "../data/models";
 import { checkJwt, loadUser } from "../middleware/authz.middleware";
-import { requireAdmin } from "../middleware";
+import { requireAdminOrOwner } from "../middleware";
 
 export const participantRouter = express.Router();
 
 const participantService = new ParticipantService();
 const questionService = new QuestionService();
 
-participantRouter.get("/", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
+/* participantRouter.get("/", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let list = await participantService.getAll();
 
   res.json({ data: list });
-});
+}); */
 
-participantRouter.post("/", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
+participantRouter.post("/", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { addresses, participant_type, question } = req.body;
 
   for (let address of addresses) {
@@ -38,14 +38,14 @@ participantRouter.post("/", checkJwt, loadUser, requireAdmin, async (req: Reques
   res.json({ data: "TEST" });
 });
 
-participantRouter.get("/:id", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
+participantRouter.get("/:id", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { id } = req.params;
   let participants = await participantService.getByQuestionId(parseInt(id));
 
   res.json({ data: participants });
 });
 
-participantRouter.put("/:id", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
+participantRouter.put("/:id", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { id } = req.params;
   let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE } = req.body;
 
@@ -62,7 +62,7 @@ participantRouter.put("/:id", checkJwt, loadUser, requireAdmin, async (req: Requ
   res.json({ data: question });
 });
 
-participantRouter.delete("/:id", checkJwt, loadUser, requireAdmin, async (req: Request, res: Response) => {
+participantRouter.delete("/:id", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { id } = req.params;
 
   await participantService.delete(parseInt(id));

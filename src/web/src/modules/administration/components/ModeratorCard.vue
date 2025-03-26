@@ -58,6 +58,14 @@
             </v-card>
           </v-col>
         </v-row>
+
+        <div class="mt-2">
+          <router-link :to="`/administration/preview/question/${question.ID}`" class="mr-4"
+            >Preview Question</router-link
+          >
+          <router-link :to="`/administration/preview/inspire/${question.ID}`" class="mr-4">Preview Inspire</router-link>
+          <router-link :to="`/administration/preview/rating/${question.ID}`">Preview Rating</router-link>
+        </div>
       </div>
     </v-card-text>
   </v-card>
@@ -104,7 +112,7 @@ export default {
     },
 
     goToResults() {
-      this.$router.push(`/administration/results/${this.question.ID}`);
+      this.$router.push(`/administration/preview/results/${this.question.ID}`);
     },
   },
 };

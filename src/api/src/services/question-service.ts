@@ -1,11 +1,12 @@
+import { Knex } from "knex";
 import { DB_SCHEMA, DB_QUESTION_TABLE, DB_ANSWER_TABLE, DB_USER_QUESTION_TABLE } from "../config";
 import { db } from "../data";
 import { Question } from "../data/models";
 import { GenericService } from "./generic-service";
 
 export class QuestionService implements GenericService<Question> {
-  async getAll(): Promise<Question[]> {
-    let questions = await db<Question>(DB_QUESTION_TABLE).withSchema(DB_SCHEMA).orderBy("TITLE");
+  async getAll(where: (query: Knex.QueryBuilder) => Knex.QueryBuilder): Promise<Question[]> {
+    let questions = await db<Question>(DB_QUESTION_TABLE).withSchema(DB_SCHEMA).modify(where).orderBy("TITLE");
 
     for (let q of questions) {
       let moderators = await db(DB_USER_QUESTION_TABLE)
@@ -58,6 +59,10 @@ export class QuestionService implements GenericService<Question> {
     });
 
     if (inserts.length > 0) return db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).insert(inserts);
+  }
+
+  async getOwners(QUESTION_ID: number): Promise<any> {
+    return await db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).where({ QUESTION_ID, ROLE: "Owner" });
   }
 
   async setOwners(QUESTION_ID: number, emails: string[]): Promise<any> {

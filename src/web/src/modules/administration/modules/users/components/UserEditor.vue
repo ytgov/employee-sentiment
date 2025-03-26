@@ -28,20 +28,34 @@
           density="comfortable"></v-select>
 
         <v-row v-if="selectedUser.STATUS == 'Active'">
-          <v-col>
+          <v-col cols="6" class="py-0">
             <v-checkbox
-              label="System Admin"
               v-model="selectedUser.IS_ADMIN"
+              class="my-0"
+              label="System Admin"
               variant="outlined"
+              hide-details
               density="comfortable"></v-checkbox
           ></v-col>
-          <v-col>
+          <v-col cols="6" class="py-0">
             <v-checkbox
               v-if="!selectedUser.IS_ADMIN"
-              label="Moderator"
+              label="Owner"
               v-model="selectedUser.ROLE"
+              value="Owner"
+              variant="outlined"
+              hide-details
+              density="comfortable"></v-checkbox
+          ></v-col>
+          <v-col cols="6" class="py-0">
+            <v-checkbox
+              v-if="!selectedUser.IS_ADMIN && selectedUser.ROLE != 'Owner'"
+              v-model="selectedUser.ROLE"
+              class="my-0"
+              label="Moderator"
               value="Moderator"
               variant="outlined"
+              hide-details
               density="comfortable"></v-checkbox
           ></v-col>
         </v-row>

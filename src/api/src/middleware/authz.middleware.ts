@@ -29,7 +29,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
   let u = await db.getBySub(sub);
 
   if (u) {
-    req.user = { ...req.auth, ...u };
+    req.user = { ...req.auth, ...u, IS_OWNER: u.ROLE == "Owner" ? "Y" : "N" };
     return next();
   }
 
@@ -52,7 +52,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
           let e = await db.getByEmail(email);
 
           if (e && e.USER_ID == "SUB_MISSING") {
-            req.user = { ...req.auth, ...e };
+            req.user = { ...req.auth, ...e, IS_OWNER: e.ROLE == "Owner" ? "Y" : "N" };
 
             await db.update(email, {
               USER_ID: sub,
@@ -77,7 +77,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
             ROLE: "",
           });
 
-          req.user = { ...req.user, ...u };
+          req.user = { ...req.user, ...u, IS_OWNER: "N" };
         }
       } else {
         console.log("Payload from Auth0 is strange or failed for", req.auth);

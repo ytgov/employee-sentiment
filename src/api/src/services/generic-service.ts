@@ -1,3 +1,5 @@
+import { Knex } from "knex";
+
 export interface GenericService<T> {
-  getAll(): Promise<T[]>;
+  getAll(where: (query: Knex.QueryBuilder) => Knex.QueryBuilder): Promise<T[]>;
 }

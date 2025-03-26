@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { DirectoryService, UserService } from "../services";
 import { checkJwt, loadUser } from "../middleware/authz.middleware";
 import { param } from "express-validator";
-import { requireAdmin, ReturnValidationErrors } from "../middleware";
+import { requireAdmin, requireAdminOrOwner, ReturnValidationErrors } from "../middleware";
 import { UserStatus } from "../data/models";
 
 export const userRouter = express.Router();
@@ -15,7 +15,7 @@ userRouter.get("/me", async (req: Request, res: Response) => {
   return res.json({ data: req.user });
 });
 
-userRouter.get("/", requireAdmin, async (req: Request, res: Response) => {
+userRouter.get("/", requireAdminOrOwner, async (req: Request, res: Response) => {
   let users = await db.getAll();
 
   for (let user of users) {

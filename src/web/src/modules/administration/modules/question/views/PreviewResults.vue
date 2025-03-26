@@ -65,7 +65,7 @@ export default {
           to: "/dashboard",
         },
         {
-          title: "Results",
+          title: "Preview Results",
         },
       ];
     },

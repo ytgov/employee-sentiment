@@ -81,7 +81,7 @@
           variant="outlined"
           rows="5"></v-textarea>
 
-        <ul>
+        <ul class="ml-6">
           <li>Use <b>``QUESTION_URL``</b> for link to Opinionator page</li>
           <li>Use <b>``RATING_URL``</b> for link to Rater page</li>
           <li>Use <b>``INSPIRE_URL``</b> for link to Inspire page</li>

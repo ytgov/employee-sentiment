@@ -14,6 +14,7 @@
           rows="3"
           density="comfortable" />
         <v-select
+          v-if="isAdmin"
           label="Owner"
           v-model="question.OWNER"
           variant="outlined"
@@ -97,7 +98,8 @@
           density="comfortable"></v-autocomplete>
 
         <v-autocomplete
-          :items="moderators"
+          v-if="isAdmin"
+          :items="users"
           v-model="question.owners"
           multiple
           item-title="display_name"
@@ -119,6 +121,7 @@
 import { mapActions, mapState } from "pinia";
 import { useQuestionStore } from "../store";
 import { useUserAdminStore } from "../../users/store";
+import { useUserStore } from "@/store/UserStore";
 
 export default {
   name: "UserEditor",
@@ -126,6 +129,7 @@ export default {
   computed: {
     ...mapState(useQuestionStore, ["question", "stateOptions"]),
     ...mapState(useUserAdminStore, ["moderators", "users"]),
+    ...mapState(useUserStore, ["isAdmin"]),
     visible() {
       return this.question ? true : false;
     },
