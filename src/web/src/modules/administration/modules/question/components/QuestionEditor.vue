@@ -14,6 +14,7 @@
           rows="3"
           density="comfortable" />
         <v-select
+          v-if="isAdmin"
           label="Owner"
           v-model="question.OWNER"
           variant="outlined"
@@ -95,6 +96,17 @@
           label="Moderators"
           variant="outlined"
           density="comfortable"></v-autocomplete>
+
+        <v-autocomplete
+          v-if="isAdmin"
+          :items="users"
+          v-model="question.owners"
+          multiple
+          item-title="display_name"
+          item-value="EMAIL"
+          label="Owners"
+          variant="outlined"
+          density="comfortable"></v-autocomplete>
       </v-card-text>
       <v-card-actions class="mx-4 mb-2">
         <v-btn color="primary" variant="flat" @click="saveClick">Save</v-btn>
@@ -109,6 +121,7 @@
 import { mapActions, mapState } from "pinia";
 import { useQuestionStore } from "../store";
 import { useUserAdminStore } from "../../users/store";
+import { useUserStore } from "@/store/UserStore";
 
 export default {
   name: "UserEditor",
@@ -116,6 +129,7 @@ export default {
   computed: {
     ...mapState(useQuestionStore, ["question", "stateOptions"]),
     ...mapState(useUserAdminStore, ["moderators", "users"]),
+    ...mapState(useUserStore, ["isAdmin"]),
     visible() {
       return this.question ? true : false;
     },

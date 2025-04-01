@@ -49,8 +49,9 @@
         {{ item.DELETED_FLAG == 1 ? "Yes" : "No" }}
       </template>
       <template v-slot:item.MODERATED_TEXT="{ item }">
-        <span v-if="item.MODERATED_TEXT != item.ANSWER_TEXT" :class="`text-error`">{{ item.MODERATED_TEXT }}</span>
-        <span v-else>{{ item.MODERATED_TEXT }}</span>
+        <span :class="{ 'text-error': item.MODERATED_TEXT && item.MODERATED_TEXT != item.ANSWER_TEXT }">{{
+          showText(item)
+        }}</span>
       </template>
     </v-data-table>
   </base-card>
@@ -118,6 +119,13 @@ export default {
       if (this.questions.length > 0 && this.questions[0].ID) {
         this.question = this.questions[0].ID || 0;
       }
+    },
+    showText(item: any) {
+      if (this.status == "Moderated") {
+        return item.MODERATED_TEXT;
+      }
+
+      return item.ANSWER_TEXT;
     },
     rowClick(event: Event, thing: any) {
       this.select(thing.item);

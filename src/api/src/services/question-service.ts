@@ -1,18 +1,25 @@
+import { Knex } from "knex";
 import { DB_SCHEMA, DB_QUESTION_TABLE, DB_ANSWER_TABLE, DB_USER_QUESTION_TABLE } from "../config";
 import { db } from "../data";
 import { Question } from "../data/models";
 import { GenericService } from "./generic-service";
 
 export class QuestionService implements GenericService<Question> {
-  async getAll(): Promise<Question[]> {
-    let questions = await db<Question>(DB_QUESTION_TABLE).withSchema(DB_SCHEMA).orderBy("TITLE");
+  async getAll(where: (query: Knex.QueryBuilder) => Knex.QueryBuilder): Promise<Question[]> {
+    let questions = await db<Question>(DB_QUESTION_TABLE).withSchema(DB_SCHEMA).modify(where).orderBy("TITLE");
 
     for (let q of questions) {
       let moderators = await db(DB_USER_QUESTION_TABLE)
         .withSchema(DB_SCHEMA)
-        .where({ QUESTION_ID: q.ID })
+        .where({ QUESTION_ID: q.ID, ROLE: "Moderator" })
         .select("EMAIL");
       q.moderators = moderators.map((m) => m.EMAIL);
+
+      let owners = await db(DB_USER_QUESTION_TABLE)
+        .withSchema(DB_SCHEMA)
+        .where({ QUESTION_ID: q.ID, ROLE: "Owner" })
+        .select("EMAIL");
+      q.owners = owners.map((m) => m.EMAIL);
     }
 
     return questions;
@@ -45,12 +52,36 @@ export class QuestionService implements GenericService<Question> {
   }
 
   async setModerators(QUESTION_ID: number, emails: string[]): Promise<any> {
-    await db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).where({ QUESTION_ID }).delete();
+    await db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).where({ QUESTION_ID, ROLE: "Moderator" }).delete();
 
     let inserts = emails.map((e) => {
       return { EMAIL: e, ROLE: "Moderator", QUESTION_ID };
     });
 
     if (inserts.length > 0) return db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).insert(inserts);
+  }
+
+  async getOwners(QUESTION_ID: number): Promise<any> {
+    return await db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).where({ QUESTION_ID, ROLE: "Owner" });
+  }
+
+  async setOwners(QUESTION_ID: number, emails: string[]): Promise<any> {
+    await db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).where({ QUESTION_ID, ROLE: "Owner" }).delete();
+
+    let inserts = emails.map((e) => {
+      return { EMAIL: e, ROLE: "Owner", QUESTION_ID };
+    });
+
+    if (inserts.length > 0) return db(DB_USER_QUESTION_TABLE).withSchema(DB_SCHEMA).insert(inserts);
+  }
+
+  async getEvents(QUESTION_ID: number): Promise<any> {
+    return db("QUESTION_HISTORY").withSchema(DB_SCHEMA).where({ QUESTION_ID }).orderBy("CREATE_DATE", "desc");
+  }
+
+  async createEvent(QUESTION_ID: number, ACTION: string, DESCRIPTION: string): Promise<any> {
+    return db("QUESTION_HISTORY")
+      .withSchema(DB_SCHEMA)
+      .insert({ QUESTION_ID, ACTION, DESCRIPTION, CREATE_DATE: new Date() });
   }
 }

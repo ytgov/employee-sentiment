@@ -3,6 +3,7 @@ import { MailOptions } from "nodemailer/lib/json-transport";
 import { MAIL_CONFIG, MAIL_FROM, FRONTEND_URL, APPLICATION_NAME } from "../config";
 import fs from "fs";
 import path from "path";
+import { RenderMarkdown } from "../utils/formatter";
 
 const BASE_TEMPLATE = "../templates/email/base.html";
 const OPINIONATOR_TEMPLATE = "../templates/email/opinionator.html";
@@ -81,7 +82,7 @@ export class EmailService {
     let basePath = path.join(__dirname, BASE_TEMPLATE);
     let baseContent = fs.readFileSync(basePath).toString();
 
-    baseContent = baseContent.replace(/``CUSTOM_CONTENT``/, customContent);
+    baseContent = baseContent.replace(/``CUSTOM_CONTENT``/, RenderMarkdown(customContent).output);
     baseContent = baseContent.replace(/``APPLICATION_URL``/g, FRONTEND_URL);
     baseContent = baseContent.replace(/``APPLICATION_NAME``/g, APPLICATION_NAME);
     baseContent = baseContent.replace(/``TO_NAME``/g, toName);

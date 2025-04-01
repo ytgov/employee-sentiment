@@ -10,6 +10,7 @@ let api = useApiStore();
 
 export const useQuestionStore = defineStore("question", {
   state: (): QuestionStore => ({
+    results: new Array<any>(),
     questions: new Array<Question>(),
     question: undefined,
     isLoading: false,
@@ -35,7 +36,10 @@ export const useQuestionStore = defineStore("question", {
     },
     myQuestions(state) {
       let u = useUserStore();
-      let myQ = state.questions.filter((q) => q.moderators && q.moderators.indexOf(u.user.EMAIL) >= 0);
+      let myQ = state.questions.filter(
+        (q) =>
+          (q.moderators && q.moderators.indexOf(u.user.EMAIL) >= 0) || (q.owners && q.owners.indexOf(u.user.EMAIL) >= 0)
+      );
       return myQ;
     },
   },
@@ -86,6 +90,19 @@ export const useQuestionStore = defineStore("question", {
     stateTitle(state: number) {
       return this.stateOptions[state].title;
     },
+    async loadSurveyResults(questionId: string) {
+      this.isLoading = true;
+
+      await api
+        .secureCall("get", `${QUESTION_URL}/${questionId}/admin-results`)
+        .then((resp) => {
+          this.results = resp.data.answers;
+          this.question = resp.data.question;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
   },
 });
 
@@ -94,6 +111,7 @@ export interface QuestionStore {
   question: Question | undefined;
   isLoading: boolean;
   stateOptions: { value: number; title: string }[];
+  results: any[];
 }
 
 export interface Question {
@@ -105,12 +123,13 @@ export interface Question {
   STATE: number;
   MAX_ANSWERS: number;
   RATINGS_PER_TRANCHE: number;
-  CURRENT_RATING_TRANCHE: number;  
+  CURRENT_RATING_TRANCHE: number;
   MODERATABLE: number;
   QUESTION_NOUNCE?: string;
   ZERO_RATING_FLAG: number;
 
   moderators?: string[];
+  owners?: string[];
 }
 
 export enum QuestionState {

@@ -2,13 +2,12 @@ import express, { Request, Response } from "express";
 import { DirectoryService, UserService } from "../services";
 import { checkJwt, loadUser } from "../middleware/authz.middleware";
 import { param } from "express-validator";
-import { ReturnValidationErrors } from "../middleware";
+import { requireAdmin, requireAdminOrOwner, ReturnValidationErrors } from "../middleware";
 import { UserStatus } from "../data/models";
 
 export const userRouter = express.Router();
 
-userRouter.use(checkJwt);
-userRouter.use(loadUser);
+userRouter.use(checkJwt, loadUser);
 
 const db = new UserService();
 
@@ -16,7 +15,7 @@ userRouter.get("/me", async (req: Request, res: Response) => {
   return res.json({ data: req.user });
 });
 
-userRouter.get("/", async (req: Request, res: Response) => {
+userRouter.get("/", requireAdminOrOwner, async (req: Request, res: Response) => {
   let users = await db.getAll();
 
   for (let user of users) {
@@ -27,7 +26,7 @@ userRouter.get("/", async (req: Request, res: Response) => {
   return res.json({ data: users });
 });
 
-userRouter.post("/", async (req: Request, res: Response) => {
+userRouter.post("/", requireAdmin, async (req: Request, res: Response) => {
   let { user } = req.body;
 
   if (user) {
@@ -53,6 +52,7 @@ userRouter.post("/", async (req: Request, res: Response) => {
 
 userRouter.put(
   "/:email",
+  requireAdmin,
   [param("email").notEmpty().isString()],
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
@@ -82,6 +82,27 @@ userRouter.put(
   }
 );
 
+userRouter.delete(
+  "/:email",
+  requireAdmin,
+  [param("email").notEmpty().isString()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { email } = req.params;
+
+    let existing = await db.getByEmail(email);
+
+    if (existing) {
+      await db.delete(email);
+
+      return res.json({
+        messages: [{ variant: "success", text: "User deleted" }],
+      });
+    }
+
+    res.status(404).send();
+  }
+);
 userRouter.post("/search-directory", async (req: Request, res: Response) => {
   let { terms } = req.body;
 

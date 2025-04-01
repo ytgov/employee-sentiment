@@ -88,3 +88,8 @@ table.table {
 .v-alert.elevation-0 {
   border: 1px #d7cfbe solid;
 }
+
+.bottom-text {
+  display: flex;
+  align-items: flex-end;
+}

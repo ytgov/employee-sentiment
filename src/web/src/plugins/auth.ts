@@ -18,8 +18,9 @@ export const AuthHelper = createAuth0({
   clientId: config.client_id,
   authorizationParams: {
     audience: config.audience,
-    redirect_uri: window.location.origin,
+    redirect_uri: window.location.origin,    
   },
   // Uncomment the following line to use the config from .env file
   // redirect_uri: REDIRECT_URI,
+  cacheLocation: "localstorage",
 });

@@ -17,7 +17,7 @@
   <h1>Employee Sentiment Dashboard</h1>
 
   <v-row class="mb-6">
-    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+    <v-col cols="12" md="4" v-if="isAdmin || isOwner">
       <v-card elevation="3" color="#F2760C66" to="/administration/participants">
         <v-card-text style="text-align: right">
           <v-icon
@@ -31,7 +31,7 @@
       </v-card>
     </v-col>
 
-    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+    <v-col cols="12" md="4" v-if="isAdmin">
       <v-card elevation="3" color="#F2760C66" to="/administration/moderation">
         <v-card-text style="text-align: right" color="white">
           <v-icon
@@ -45,7 +45,7 @@
       </v-card>
     </v-col>
 
-    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+    <v-col cols="12" md="4" v-if="isAdmin || isOwner">
       <v-card elevation="3" color="#F2760C66" to="/administration/questions">
         <v-card-text style="text-align: right">
           <v-icon
@@ -58,7 +58,7 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+    <v-col cols="12" md="4" v-if="isAdmin">
       <v-card elevation="3" color="#F2760C66" to="/administration/users">
         <v-card-text style="text-align: right">
           <v-icon
@@ -72,7 +72,7 @@
       </v-card>
     </v-col>
 
-    <v-col cols="12" md="4" v-if="user.IS_ADMIN == 'Y'">
+    <v-col cols="12" md="4" v-if="isAdmin || isOwner">
       <v-card elevation="3" color="#F2760C66" to="/administration/emailer">
         <v-card-text style="text-align: right">
           <v-icon
@@ -114,10 +114,10 @@ export default {
   computed: {
     ...mapState(useQuestionStore, ["questionCount", "responseCount", "moderateCount", "myQuestions"]),
     ...mapState(useUserAdminStore, ["userCount"]),
-    ...mapState(useUserStore, ["user"]),
+    ...mapState(useUserStore, ["user", "isAdmin", "isOwner"]),
   },
   async mounted() {
-    await this.getAllUsers();
+    if (this.isAdmin) await this.getAllUsers();
     await this.loadQuestions();
     await this.loadResponses();
   },

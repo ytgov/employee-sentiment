@@ -41,8 +41,10 @@ export const useParticipantsStore = defineStore("participants", {
   actions: {
     async initialize() {},
     async loadResponses() {},
+    
+    parse(strict: boolean = false): { valid: string[]; invalid: string[] } {
+      this.batch.addresses = [];
 
-    parse(): { valid: string[]; invalid: string[] } {
       let results = { valid: new Array<string>(), invalid: new Array<string>() };
 
       if (this.batch && this.batch.participants) {
@@ -50,15 +52,21 @@ export const useParticipantsStore = defineStore("participants", {
         let array = list.split(/[\s\,]/gi).filter((s: string) => s.length > 0);
 
         for (let item of array) {
-          item = item.replace(/;/g, ""); // strip out semicolons
-
-          let t = new RegExp(/^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/g).test(item);
+          item = item.trim().replace(/;/g, "");
+            let t = new RegExp(/^[\w\-\.']+@([\w-]+\.)+[\w-]{2,}$/g).test(item);
           if (t) results.valid.push(item);
           else results.invalid.push(item);
         }
       }
 
-      this.batch.addresses = results.valid;
+      if (strict) {
+        if (results.invalid.length == 0) this.batch.addresses = results.valid;
+        else {
+          m.notify({ text: "This file has invalid email addresses", variant: "error" });
+        }
+      } else {
+        this.batch.addresses = results.valid;
+      }
 
       return results;
     },

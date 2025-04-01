@@ -21,7 +21,10 @@ export const useUserStore = defineStore("user", {
   }),
   getters: {
     isAdmin(state) {
-      return true;
+      return state.user.IS_ADMIN === "Y";
+    },
+    isOwner(state) {
+      return state.user.ROLE === "Owner";
     },
   },
   actions: {

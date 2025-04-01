@@ -79,13 +79,18 @@
           label="Email body"
           density="comfortable"
           variant="outlined"
-          rows="3"></v-textarea>
+          rows="5"></v-textarea>
 
-        <ul>
+        <ul class="ml-6">
           <li>Use <b>``QUESTION_URL``</b> for link to Opinionator page</li>
           <li>Use <b>``RATING_URL``</b> for link to Rater page</li>
           <li>Use <b>``INSPIRE_URL``</b> for link to Inspire page</li>
           <li>Use <b>``RESULTS_URL``</b> for link to Results page</li>
+          <li>Use Markdown sytax like <b>[Click here](``QUESTION_URL``)</b> to make it show as a link 'Click here'</li>
+          <li>
+            Use HTML syntax like <b>&lt;a href="``QUESTION_URL``"&gt;Click here&lt;/a&gt;</b> to make it show as a link
+            'Click here'
+          </li>
         </ul>
 
         <v-label></v-label>
@@ -100,12 +105,17 @@
       <v-divider vertical />
       <v-col>
         <v-card elevation="0" variant="tonal" color="#F2A900">
-          <v-card-title>Event Log</v-card-title>
+          <v-card-title class="pt-4">Event Log</v-card-title>
 
           <v-list>
             <div v-for="(event, idx) of eventLog">
-              <v-list-item :title="event.TITLE" :subtitle="formatSubtitle(event)"> </v-list-item>
-              <v-divider v-if="idx < eventLog.length - 1" />
+              <v-divider />
+              <v-list-item :title="event.ACTION">
+                <v-list-item-subtitle class="ml-1 d-flex text-subtitle-2">
+                  On: {{ formatSubtitle(event) }}<br />
+                  {{ event.DESCRIPTION }}
+                </v-list-item-subtitle>
+              </v-list-item>
             </div>
           </v-list>
         </v-card>
@@ -183,7 +193,7 @@ export default {
       await this.loadQuestions();
     },
     formatSubtitle(item: Event) {
-      return `${moment(item.CREATE_DATE).format("YYYY-MM-DD @ h:mm A")} by ${item.user.display_name}`;
+      return `${moment(item.CREATE_DATE).format("YYYY-MM-DD @ h:mm A")}`;
     },
     async sendTestClick() {
       await this.sendTest();
@@ -192,8 +202,10 @@ export default {
       await this.sendEmail();
     },
     async questionChange() {
-      console.log("QUESTION IS", this.question);
       if (this.question && this.question.ID) {
+        this.email.subject = this.question.EMAIL_SUBJECT ?? "";
+        this.email.body = this.question.EMAIL_BODY ?? "";
+
         let parts = await this.getParticipants(this.question.ID);
 
         console.log(parts);

@@ -1,10 +1,11 @@
 import express, { Request, Response } from "express";
-import { ReturnValidationErrors } from "../middleware";
+import { requireAdminOrOwner, ReturnValidationErrors } from "../middleware";
 import { param } from "express-validator";
 import { AnswerService, EmailService, ParticipantService, QuestionService } from "../services";
 import { checkJwt, loadUser } from "../middleware/authz.middleware";
 import { Answer, QuestionState } from "../data/models";
 import { reverse, sortBy } from "lodash";
+import { Knex } from "knex";
 
 export const questionRouter = express.Router();
 
@@ -13,13 +14,21 @@ const answerService = new AnswerService();
 const participantService = new ParticipantService();
 const emailService = new EmailService();
 
-questionRouter.get("/", async (req: Request, res: Response) => {
-  let list = await questionService.getAll();
+questionRouter.get("/", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
+  const query = function (q: Knex.QueryBuilder) {
+    return q;
+  };
+
+  let list = await questionService.getAll(query);
+
+  if (req.user.IS_OWNER == "Y") {
+    list = list.filter((q) => q.owners?.includes(req.user.EMAIL));
+  }
 
   res.json({ data: list });
 });
 
-questionRouter.post("/", async (req: Request, res: Response) => {
+questionRouter.post("/", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let {
     CURRENT_RATING_TRANCHE,
     DISPLAY_TEXT,
@@ -31,7 +40,13 @@ questionRouter.post("/", async (req: Request, res: Response) => {
     MODERATABLE,
     ZERO_RATING_FLAG,
     moderators,
+    owners,
   } = req.body;
+
+  if (req.user.IS_OWNER == "Y") {
+    owners = [req.user.EMAIL];
+    OWNER = req.user.EMAIL;
+  }
 
   let question = await questionService.create({
     CURRENT_RATING_TRANCHE,
@@ -46,43 +61,58 @@ questionRouter.post("/", async (req: Request, res: Response) => {
     QUESTION_NOUNCE: makeToken(),
   });
 
-  await questionService.setModerators(question[0].ID, moderators);
+  await questionService.setModerators(question[0].ID, moderators ?? []);
+  await questionService.setOwners(question[0].ID, owners ?? []);
 
   res.json({ data: question });
 });
 
-questionRouter.post("/:id/send-email-test", checkJwt, loadUser, async (req: Request, res: Response) => {
-  const { id } = req.params;
-  let { subject, body, recipients } = req.body;
-  let token = "123456789";
-  
-  if (recipients.includes("Opinionators")) {
-    await emailService.sendOpinionatorEmail(
-      { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
-      `[TEST EMAIL]: ${subject}`,
-      body,
-      token,
-      ""
-    );
-  }
-  if (recipients.includes("Raters")) {
-    await emailService.sendRaterEmail(
-      { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
-      `[TEST EMAIL]: ${subject}`,
-      body,
-      token,
-      ""
-    );
-  }
+questionRouter.post(
+  "/:id/send-email-test",
+  checkJwt,
+  loadUser,
+  requireAdminOrOwner,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    let { subject, body, recipients } = req.body;
+    let token = "123456789";
 
-  res.json({ data: "sent" });
-});
+    await questionService.update(parseInt(id), { EMAIL_SUBJECT: subject, EMAIL_BODY: body });
 
-questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, res: Response) => {
+    if (recipients.includes("Opinionators")) {
+      await emailService.sendOpinionatorEmail(
+        { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
+        `[TEST EMAIL]: ${subject}`,
+        body,
+        token,
+        ""
+      );
+
+      await questionService.createEvent(parseInt(id), "Opinionator test email sent", `By: ${req.user.EMAIL}`);
+    }
+    if (recipients.includes("Raters")) {
+      await emailService.sendRaterEmail(
+        { email: req.user.EMAIL, fullName: `${req.user.FIRST_NAME} ${req.user.LAST_NAME}` },
+        `[TEST EMAIL]: ${subject}`,
+        body,
+        token,
+        ""
+      );
+
+      await questionService.createEvent(parseInt(id), "Opinionator test email sent", `By: ${req.user.EMAIL}`);
+    }
+
+    res.json({ data: "sent" });
+  }
+);
+
+questionRouter.post("/:id/send-email", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   const { id } = req.params;
   let { subject, body, recipients } = req.body;
   let participants = await new ParticipantService().getByQuestionId(parseInt(id));
   let question = await questionService.getById(parseInt(id));
+
+  await questionService.update(parseInt(id), { EMAIL_SUBJECT: subject, EMAIL_BODY: body });
 
   if (question && recipients.includes("Opinionators")) {
     let opin = participants.filter((p) => p.IS_RESPONDER == 1);
@@ -96,6 +126,12 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
         question.QUESTION_NOUNCE
       );
     }
+
+    await questionService.createEvent(
+      parseInt(id),
+      `Opinionators email sent - ${opin.length} emails`,
+      `By: ${req.user.EMAIL}`
+    );
   }
   if (question && recipients.includes("Raters")) {
     let opin = participants.filter((p) => p.IS_RATER == 1);
@@ -109,12 +145,18 @@ questionRouter.post("/:id/send-email", checkJwt, loadUser, async (req: Request, 
         question.QUESTION_NOUNCE
       );
     }
+
+    await questionService.createEvent(
+      parseInt(id),
+      `Raters email sent - ${opin.length} emails`,
+      `By: ${req.user.EMAIL}`
+    );
   }
 
   res.json({ data: "sent" });
 });
 
-questionRouter.put("/:id", async (req: Request, res: Response) => {
+questionRouter.put("/:id", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { id } = req.params;
   let {
     CURRENT_RATING_TRANCHE,
@@ -128,6 +170,7 @@ questionRouter.put("/:id", async (req: Request, res: Response) => {
     ZERO_RATING_FLAG,
     QUESTION_NOUNCE,
     moderators,
+    owners,
   } = req.body;
 
   let question = await questionService.update(parseInt(id), {
@@ -143,33 +186,39 @@ questionRouter.put("/:id", async (req: Request, res: Response) => {
     QUESTION_NOUNCE: QUESTION_NOUNCE || makeToken(),
   });
 
-  await questionService.setModerators(parseInt(id), moderators);
+  await questionService.setModerators(parseInt(id), moderators ?? []);
+  await questionService.setOwners(parseInt(id), owners ?? []);
 
   res.json({ data: question });
 });
 
-questionRouter.get("/:id/events", async (req: Request, res: Response) => {
+questionRouter.get("/:id/events", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { id } = req.params;
 
-  let list = [
-    {
-      ID: 12,
-      TITLE: "Opinionator list created",
-      CREATE_DATE: new Date(),
-      QUESTION_ID: id,
-      user: { display_name: "Michael Johnson" },
-    },
-    {
-      ID: 12,
-      TITLE: "Opinionator email sent to 46 participants",
-      CREATE_DATE: new Date(),
-      QUESTION_ID: id,
-      user: { display_name: "Eckhard Krabel" },
-    },
-  ];
+  const list = await questionService.getEvents(parseInt(id));
 
   res.json({ data: list });
 });
+
+questionRouter.get(
+  "/preview/:questionId",
+  checkJwt,
+  loadUser,
+  requireAdminOrOwner,
+  [param("questionId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { questionId } = req.params;
+
+    let payload = await returnPreviewQuestion(parseInt(questionId));
+
+    if (payload) {
+      return res.json(payload);
+    }
+
+    res.status(404).send();
+  }
+);
 
 questionRouter.get(
   "/:token",
@@ -192,7 +241,32 @@ questionRouter.get(
 
 // display the results for a question
 questionRouter.get(
+  "/:questionId/admin-results",
+  checkJwt,
+  loadUser,
+  requireAdminOrOwner,
+  [param("questionId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { questionId } = req.params;
+    let question = await questionService.getById(parseInt(questionId));
+
+    if (question) {
+      // should also check for applicable state
+      let answers = await answerService.getAllForQuestion(question.ID, question.ZERO_RATING_FLAG == 1);
+      return res.json({ data: { question, answers: reverse(sortBy(answers, "rating")) } });
+    }
+
+    res.status(404).send();
+  }
+);
+
+// display the results for a question
+questionRouter.get(
   "/:questionId/results",
+  checkJwt,
+  loadUser,
+  requireAdminOrOwner,
   [param("questionId").notEmpty()],
   ReturnValidationErrors,
   async (req: Request, res: Response) => {
@@ -204,6 +278,31 @@ questionRouter.get(
       // should also check for applicable state
       let answers = await answerService.getAllForQuestion(question.ID, question.ZERO_RATING_FLAG == 1);
       return res.json({ data: { question, answers: reverse(sortBy(answers, "rating")) } });
+    }
+
+    res.status(404).send();
+  }
+);
+
+// insire results
+questionRouter.get(
+  "/preview/:questionId/inspire",
+  checkJwt,
+  loadUser,
+  requireAdminOrOwner,
+  [param("questionId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { questionId } = req.params;
+
+    let question = await questionService.getById(parseInt(questionId));
+
+    if (question) {
+      // should also check for applicable state
+      (question as any).answers_remaining = question.MAX_ANSWERS;
+      let answers = await answerService.getAllForQuestion(question.ID, question.ZERO_RATING_FLAG == 1);
+
+      return res.json({ data: { question, answers } });
     }
 
     res.status(404).send();
@@ -232,6 +331,26 @@ questionRouter.get(
 
         return res.json({ data: { question, answers } });
       }
+    }
+
+    res.status(404).send();
+  }
+);
+
+questionRouter.get(
+  "/preview/:questionId/responses",
+  checkJwt,
+  loadUser,
+  requireAdminOrOwner,
+  [param("questionId").notEmpty()],
+  ReturnValidationErrors,
+  async (req: Request, res: Response) => {
+    let { questionId } = req.params;
+    let question = await returnPreviewQuestion(parseInt(questionId));
+
+    if (question && question.data && question.data.ID) {
+      let answers = await answerService.getSampleForQuestion(question.data.ID, question.data.RATINGS_PER_TRANCHE, 0);
+      return res.json({ data: answers });
     }
 
     res.status(404).send();
@@ -336,6 +455,25 @@ async function returnQuestion(token: string, justAdded: boolean) {
   }
 
   return undefined;
+}
+
+async function returnPreviewQuestion(questionId: number) {
+  let question = await questionService.getById(questionId);
+
+  if (question) {
+    let q = question as any;
+
+    delete q.OWNER;
+    delete q.CREATE_DATE;
+    delete q.CURRENT_RATING_TRANCHE;
+
+    q.answer_count = 0;
+    q.answers_remaining = question.MAX_ANSWERS;
+    q.p_is_rater = true;
+    q.p_is_responder = true;
+
+    return { data: q };
+  }
 }
 
 function makeToken() {

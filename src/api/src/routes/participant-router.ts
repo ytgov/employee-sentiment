@@ -1,18 +1,21 @@
 import express, { Request, Response } from "express";
-import { ParticipantService } from "../services";
-import { Participant } from "src/data/models";
+import { ParticipantService, QuestionService } from "../services";
+import { Participant } from "../data/models";
+import { checkJwt, loadUser } from "../middleware/authz.middleware";
+import { requireAdminOrOwner } from "../middleware";
 
 export const participantRouter = express.Router();
 
 const participantService = new ParticipantService();
+const questionService = new QuestionService();
 
-participantRouter.get("/", async (req: Request, res: Response) => {
+/* participantRouter.get("/", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let list = await participantService.getAll();
 
   res.json({ data: list });
-});
+}); */
 
-participantRouter.post("/", async (req: Request, res: Response) => {
+participantRouter.post("/", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { addresses, participant_type, question } = req.body;
 
   for (let address of addresses) {
@@ -26,17 +29,23 @@ participantRouter.post("/", async (req: Request, res: Response) => {
     await participantService.create(p);
   }
 
+  await questionService.createEvent(
+    parseInt(question),
+    `Participants added - ${addresses.length} emails`,
+    `By: ${req.user.EMAIL}`
+  );
+
   res.json({ data: "TEST" });
 });
 
-participantRouter.get("/:id", async (req: Request, res: Response) => {
+participantRouter.get("/:id", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { id } = req.params;
   let participants = await participantService.getByQuestionId(parseInt(id));
 
   res.json({ data: participants });
 });
 
-participantRouter.put("/:id", async (req: Request, res: Response) => {
+participantRouter.put("/:id", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { id } = req.params;
   let { CURRENT_RATING_TRANCHE, DISPLAY_TEXT, MAX_ANSWERS, OWNER, RATINGS_PER_TRANCHE, STATE, TITLE } = req.body;
 
@@ -53,7 +62,7 @@ participantRouter.put("/:id", async (req: Request, res: Response) => {
   res.json({ data: question });
 });
 
-participantRouter.delete("/:id", async (req: Request, res: Response) => {
+participantRouter.delete("/:id", checkJwt, loadUser, requireAdminOrOwner, async (req: Request, res: Response) => {
   let { id } = req.params;
 
   await participantService.delete(parseInt(id));
