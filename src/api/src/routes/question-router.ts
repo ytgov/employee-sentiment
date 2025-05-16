@@ -39,6 +39,7 @@ questionRouter.post("/", checkJwt, loadUser, requireAdminOrOwner, async (req: Re
     TITLE,
     MODERATABLE,
     ZERO_RATING_FLAG,
+    MAX_LENGTH,
     moderators,
     owners,
   } = req.body;
@@ -58,6 +59,7 @@ questionRouter.post("/", checkJwt, loadUser, requireAdminOrOwner, async (req: Re
     TITLE,
     MODERATABLE,
     ZERO_RATING_FLAG,
+    MAX_LENGTH,
     QUESTION_NOUNCE: makeToken(),
   });
 
@@ -169,6 +171,7 @@ questionRouter.put("/:id", checkJwt, loadUser, requireAdminOrOwner, async (req: 
     MODERATABLE,
     ZERO_RATING_FLAG,
     QUESTION_NOUNCE,
+    MAX_LENGTH,
     moderators,
     owners,
   } = req.body;
@@ -184,6 +187,7 @@ questionRouter.put("/:id", checkJwt, loadUser, requireAdminOrOwner, async (req: 
     MODERATABLE,
     ZERO_RATING_FLAG,
     QUESTION_NOUNCE: QUESTION_NOUNCE || makeToken(),
+    MAX_LENGTH,
   });
 
   await questionService.setModerators(parseInt(id), moderators ?? []);

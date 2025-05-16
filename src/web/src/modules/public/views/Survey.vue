@@ -8,6 +8,7 @@
 
   <div v-if="question">
     <h1 class="mb-0">{{ question.TITLE }}</h1>
+    asfsadfdsafa
     <v-divider class="my-3" />
     <h2 class="text-h5 mb-3"><strong>Question:</strong> {{ question.DISPLAY_TEXT }}</h2>
 
@@ -22,9 +23,7 @@
           <v-card class="mb-5 question" elevation="0">
             <v-card-title class="pb-0" style="min-height: 35px">
               <v-row>
-                <v-col cols="11" class="pb-0" style="line-height: 24px"
-                  >Response {{ i }}.
-                </v-col>
+                <v-col cols="11" class="pb-0" style="line-height: 24px">Response {{ i }}. </v-col>
                 <v-col cols="1" class="">
                   <div class="float-right">
                     <v-icon
@@ -46,6 +45,8 @@
                 variant="outlined"
                 hide-details
                 rows="3"
+                :counter="question.MAX_LENGTH ?? 256"
+                :maxlength="question.MAX_LENGTH ?? 256"
                 bg-color="white"
                 class="mt-4"></v-textarea>
             </v-card-text>

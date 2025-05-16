@@ -71,6 +71,7 @@
               ]"
               v-model="question.ZERO_RATING_FLAG"
               variant="outlined"
+              hide-details
               density="comfortable" />
           </v-col>
           <v-col cols="6">
@@ -83,7 +84,16 @@
               ]"
               v-model="question.MODERATABLE"
               variant="outlined"
+              hide-details
               density="comfortable" />
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              type="number"
+              label="Maximum length"
+              v-model="question.MAX_LENGTH"
+              variant="outlined"
+              density="comfortable"></v-text-field>
           </v-col>
         </v-row>
 

@@ -19,6 +19,8 @@
           v-model="answer"
           variant="outlined"
           hide-details
+          :counter="question.MAX_LENGTH ?? 256"
+          :maxlength="question.MAX_LENGTH ?? 256"
           bg-color="white"
           class="mt-4"></v-textarea>
       </v-card-text>
