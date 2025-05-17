@@ -57,8 +57,9 @@
                 density="comfortable"
                 v-model="answers[i]"
                 variant="outlined"
-                hide-details
                 rows="3"
+                :counter="question.MAX_LENGTH ?? 256"
+                :maxlength="question.MAX_LENGTH ?? 256"
                 bg-color="white"
                 class="mt-4"></v-textarea>
             </v-card-text>

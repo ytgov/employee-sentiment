@@ -17,6 +17,7 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: michael@icefoganalytics.com
       PGADMIN_DEFAULT_PASSWORD: testing123
+      PGADMIN_CONFIG_MAX_LOGIN_ATTEMPTS: 100
     ports:
       - "8111:80"
     volumes:

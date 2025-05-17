@@ -127,6 +127,7 @@ export interface Question {
   MODERATABLE: number;
   QUESTION_NOUNCE?: string;
   ZERO_RATING_FLAG: number;
+  MAX_LENGTH?: number;
 
   moderators?: string[];
   owners?: string[];
